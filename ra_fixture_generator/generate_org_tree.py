@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+# --------------------------------------------------------------------------------------
+# SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
+# SPDX-License-Identifier: MPL-2.0
+# --------------------------------------------------------------------------------------
 import random
 
 from mimesis import Address
@@ -10,7 +15,7 @@ def generate_cantina():
 
 
 def gen_schools_and_childcare(seed, num_schools=30, num_childcare=20):
-    address_gen = Address('da', seed=seed)
+    address_gen = Address("da", seed=seed)
 
     def generate_school(_):
         name = address_gen.city() + " skole"
@@ -33,27 +38,27 @@ def gen_schools_and_childcare(seed, num_schools=30, num_childcare=20):
 def gen_org_tree(seed):
     random.seed(seed)
     org_tree = {
-        'Borgmesterens Afdeling': {
-            'Budget og Planlægning': {},
-            'HR og organisation': {},
-            'Erhverv': {},
-            'Byudvikling': {},
-            'IT-Support': {},
+        "Borgmesterens Afdeling": {
+            "Budget og Planlægning": {},
+            "HR og organisation": {},
+            "Erhverv": {},
+            "Byudvikling": {},
+            "IT-Support": {},
         },
-        'Teknik og Miljø': {
-            'Kloakering': generate_cantina(),
-            'Park og vej': generate_cantina(),
-            'Renovation': generate_cantina(),
-            'Belysning': generate_cantina(),
-            'IT-Support': generate_cantina(),
+        "Teknik og Miljø": {
+            "Kloakering": generate_cantina(),
+            "Park og vej": generate_cantina(),
+            "Renovation": generate_cantina(),
+            "Belysning": generate_cantina(),
+            "IT-Support": generate_cantina(),
         },
-        'Skole og Børn': {
-            'Social Indsats': {
+        "Skole og Børn": {
+            "Social Indsats": {
                 "Skole og børnehaver": gen_schools_and_childcare(seed),
             },
-            'IT-Support': generate_cantina(),
+            "IT-Support": generate_cantina(),
         },
-        'Social og sundhed': {},
+        "Social og sundhed": {},
     }
     return org_tree
 
@@ -61,14 +66,14 @@ def gen_org_tree(seed):
 def tree_visitor(tree, yield_func, level=1, prefix=""):
     for name, children in tree.items():
         yield yield_func(name, level, prefix)
-        yield from tree_visitor(children, yield_func, level+1, prefix + name)
+        yield from tree_visitor(children, yield_func, level + 1, prefix + name)
 
 
 def tree_visitor_levels(tree, yield_func, level=1, prefix=""):
     for name, children in tree.items():
         yield yield_func(name, level, prefix)
     for name, children in tree.items():
-        yield from tree_visitor_levels(children, yield_func, level+1, prefix + name)
+        yield from tree_visitor_levels(children, yield_func, level + 1, prefix + name)
 
 
 if __name__ == "__main__":

@@ -3,52 +3,49 @@
 # SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
-import click
-from itertools import chain
+import random
 from itertools import groupby
 from itertools import zip_longest
-from more_itertools import flatten
-from more_itertools import prepend
-from more_itertools import ilen
-from more_itertools import take
-from operator import itemgetter
 from operator import add
-import random
-
+from operator import itemgetter
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
 from typing import Union
 
-from ramodels.lora import Facet
-from ramodels.lora import Klasse
-from ramodels.lora import Organisation
-from ramodels.mo import Address
-# from ramodels.mo import Association
-from ramodels.mo import Employee
-from ramodels.mo import Engagement
-from ramodels.mo import Manager
-from ramodels.mo import OrganisationUnit
-
+import click
+from apply import apply
+from generate_org_tree import gen_org_tree
+from generate_org_tree import tree_visitor
 from mimesis import Code
 from mimesis import Internet
 from mimesis import Person
+from mimesis.builtins import DenmarkSpecProvider
 from mimesis.builtins.base import BaseSpecProvider
 from mimesis.enums import EANFormat
-from mimesis.builtins import DenmarkSpecProvider
 from mimesis.enums import Gender
-
-from apply import apply
-
+from more_itertools import flatten
+from more_itertools import ilen
+from more_itertools import prepend
+from more_itertools import take
 from ra_flatfile_importer.lora_flatfile_model import LoraFlatFileFormat
 from ra_flatfile_importer.lora_flatfile_model import LoraFlatFileFormatChunk
 from ra_flatfile_importer.mo_flatfile_model import MOFlatFileFormat
 from ra_flatfile_importer.mo_flatfile_model import MOFlatFileFormatChunk
 from ra_flatfile_importer.util import generate_uuid as unseeded_generate_uuid
+from ramodels.lora import Facet
+from ramodels.lora import Klasse
+from ramodels.lora import Organisation
+from ramodels.mo import Address
+from ramodels.mo import Employee
+from ramodels.mo import Engagement
+from ramodels.mo import Manager
+from ramodels.mo import OrganisationUnit
 
-from ra_fixture_generator.generate_org_tree import gen_org_tree, tree_visitor
+# from ramodels.mo import Association
 
-CLASSES: Dict[str, List[Union[Tuple[str, str, str], str]]] = {
+IN_CLASSES: Dict[str, List[Union[Tuple[str, str, str], str]]] = {
     "engagement_job_function": [
         "Udvikler",
         "Specialkonsulent",
@@ -157,14 +154,20 @@ CLASSES: Dict[str, List[Union[Tuple[str, str, str], str]]] = {
     "org_unit_hierarchy": [],
 }
 
-for facetbvn, classes in CLASSES.items():
-    CLASSES[facetbvn] = list(map(
-        lambda clazz: clazz if isinstance(clazz, tuple) else (clazz, clazz, "TEXT"),
-        classes
-    ))
+CLASSES: Dict[str, List[Tuple[str, str, str]]] = {}
+
+for facetbvn, classes in IN_CLASSES.items():
+    CLASSES[facetbvn] = list(
+        map(
+            lambda clazz: clazz if isinstance(clazz, tuple) else (clazz, clazz, "TEXT"),
+            classes,
+        )
+    )
 
 
-def generate_facets_and_classes(generate_uuid, organisation) -> Tuple[List[Facet], List[Klasse]]:
+def generate_facets_and_classes(
+    generate_uuid, organisation
+) -> Tuple[List[Facet], List[Klasse]]:
     def construct_facets(facetbvn):
         facet = Facet.from_simplified_fields(
             uuid=generate_uuid(facetbvn),
@@ -189,7 +192,7 @@ def generate_facets_and_classes(generate_uuid, organisation) -> Tuple[List[Facet
         for facetbvn, classes in CLASSES.items():
             for user_key, title, scope in classes:
                 yield facetbvn, user_key, title, scope
- 
+
     facets = list(map(construct_facets, CLASSES.keys()))
     klasses = list(map(construct_class, yield_class()))
     return facets, klasses
@@ -199,7 +202,7 @@ def generate_org_units(generate_uuid, org_tree):
     def construct_org_unit(name, level, prefix) -> Tuple[int, OrganisationUnit]:
         parent_uuid = None
         if prefix:
-            parent_uuid=generate_uuid("org_unit" + prefix)
+            parent_uuid = generate_uuid("org_unit" + prefix)
 
         return level, OrganisationUnit.from_simplified_fields(
             uuid=generate_uuid("org_unit" + prefix + name),
@@ -219,13 +222,14 @@ def generate_org_units(generate_uuid, org_tree):
         layers.append(layer)
     return layers
 
+
 class PNummer(BaseSpecProvider):
     class Meta:
         name = "pnummer"
 
     def _gen_x_digit_number(self, n: int) -> str:
         assert n > 0
-        number = self.random.randint(0, 10**n-1)
+        number = self.random.randint(0, 10 ** n - 1)
         return str(number).zfill(n)
 
     def pnumber(self) -> str:
@@ -235,7 +239,7 @@ class PNummer(BaseSpecProvider):
 def generate_org_addresses(generate_uuid, seed, org_layers):
     code_gen = Code(seed=seed)
     internet_gen = Internet(seed=seed)
-    person_gen = Person('da', seed=seed)
+    person_gen = Person("da", seed=seed)
     pnummer_gen = PNummer(seed=seed)
 
     def construct_addresses(org_unit):
@@ -243,16 +247,22 @@ def generate_org_addresses(generate_uuid, seed, org_layers):
 
         addresses = [
             # TODO: dar_uuid needs to be valid, fetch from DAR?
-            #(generate_uuid("fake-dar-1" + str(org_unit_uuid)), generate_uuid("AdresseMailUnit")),
-            #(generate_uuid("fake-dar-2" + str(org_unit_uuid)), generate_uuid("AdresseHenvendelsessted")),
-            #(generate_uuid("fake-dar-3" + str(org_unit_uuid)), generate_uuid("AdressePostRetur")),
+            # (generate_uuid("fake-dar-1" + str(org_unit_uuid)),
+            #  generate_uuid("AdresseMailUnit")),
+            # (generate_uuid("fake-dar-2" + str(org_unit_uuid)),
+            #  generate_uuid("AdresseHenvendelsessted")),
+            # (generate_uuid("fake-dar-3" + str(org_unit_uuid)),
+            #  generate_uuid("AdressePostRetur")),
             (person_gen.telephone("########"), generate_uuid("FaxUnit")),
             (person_gen.telephone("########"), generate_uuid("PhoneUnit")),
             (person_gen.email(), generate_uuid("EmailUnit")),
-            (code_gen.ean(EANFormat.EAN13), generate_uuid('EAN')),
-            (pnummer_gen.pnumber(), generate_uuid('p-nummer')),
-            ("Bygning {}".format(random.randrange(1, 20)), generate_uuid('LocationUnit')),
-            (internet_gen.home_page(), generate_uuid('WebUnit')),
+            (code_gen.ean(EANFormat.EAN13), generate_uuid("EAN")),
+            (pnummer_gen.pnumber(), generate_uuid("p-nummer")),
+            (
+                "Bygning {}".format(random.randrange(1, 20)),
+                generate_uuid("LocationUnit"),
+            ),
+            (internet_gen.home_page(), generate_uuid("WebUnit")),
         ]
 
         return [
@@ -264,16 +274,15 @@ def generate_org_addresses(generate_uuid, seed, org_layers):
                 org_uuid=generate_uuid(""),
                 from_date="1930-01-01",
                 org_unit_uuid=org_unit_uuid,
-            ) for value, address_type_uuid in addresses
+            )
+            for value, address_type_uuid in addresses
         ]
 
-    return [
-        list(flatten(map(construct_addresses, layer))) for layer in org_layers
-    ]
+    return [list(flatten(map(construct_addresses, layer))) for layer in org_layers]
 
 
 def generate_employees(generate_uuid, seed, org_layers):
-    person_gen = Person('da', seed=seed)
+    person_gen = Person("da", seed=seed)
     danish_gen = DenmarkSpecProvider(seed=seed)
 
     num_orgs = ilen(flatten(org_layers))
@@ -302,20 +311,21 @@ def generate_employees(generate_uuid, seed, org_layers):
 
 
 def generate_employee_addresses(generate_uuid, seed, employees):
-    code_gen = Code(seed=seed)
-    internet_gen = Internet(seed=seed)
-    person_gen = Person('da', seed=seed)
-    pnummer_gen = PNummer(seed=seed)
+    person_gen = Person("da", seed=seed)
 
     def construct_addresses(employee):
         employee_uuid = employee.uuid
 
         addresses = [
             # TODO: dar_uuid needs to be valid, fetch from DAR?
-            #(generate_uuid("fake-dar-1" + str(employee_uuid)), generate_uuid("AdressePostEmployee")),
+            # (generate_uuid("fake-dar-1" + str(employee_uuid)),
+            #  generate_uuid("AdressePostEmployee")),
             (person_gen.email(), generate_uuid("EmailEmployee")),
             (person_gen.telephone("########"), generate_uuid("PhoneEmployee")),
-            ("Bygning {}".format(random.randrange(1, 20)), generate_uuid('LocationEmployee')),
+            (
+                "Bygning {}".format(random.randrange(1, 20)),
+                generate_uuid("LocationEmployee"),
+            ),
         ]
 
         return [
@@ -327,22 +337,24 @@ def generate_employee_addresses(generate_uuid, seed, employees):
                 org_uuid=generate_uuid(""),
                 from_date="1930-01-01",
                 person_uuid=employee_uuid,
-            ) for value, address_type_uuid in addresses
+            )
+            for value, address_type_uuid in addresses
         ]
 
     return list(flatten(map(construct_addresses, employees)))
 
 
 def generate_engagements(generate_uuid, employees, org_layers):
-
     def construct_engagement(employee, org_unit):
         employee_uuid = employee.uuid
         org_unit_uuid = org_unit.uuid
 
-        job_function = random.choice(CLASSES['engagement_job_function'])[0]
+        job_function = random.choice(CLASSES["engagement_job_function"])[0]
         job_function_uuid = generate_uuid(job_function)
 
-        uuid = generate_uuid(str(employee_uuid) + str(org_unit_uuid) + str(job_function_uuid))
+        uuid = generate_uuid(
+            str(employee_uuid) + str(org_unit_uuid) + str(job_function_uuid)
+        )
 
         return Engagement.from_simplified_fields(
             uuid=uuid,
@@ -364,7 +376,9 @@ def generate_engagements(generate_uuid, employees, org_layers):
         assert len(org_employees) == num_employees_per_org
         return [construct_engagement(employee, org_unit) for employee in org_employees]
 
-    return_value = list(list(flatten(map(construct_engagements, layer))) for layer in org_layers)
+    return_value = list(
+        list(flatten(map(construct_engagements, layer))) for layer in org_layers
+    )
     # Ensure all employees were consumed
     assert ilen(employee_iter) == 0
     return return_value
@@ -384,16 +398,18 @@ def generate_managers(generate_uuid, employees, org_layers):
         employee_uuid = employee.uuid
         org_unit_uuid = org_unit.uuid
 
-        responsibility = random.choice(CLASSES['responsibility'])[0]
+        responsibility = random.choice(CLASSES["responsibility"])[0]
         responsibility_uuid = generate_uuid(responsibility)
 
-        manager_level = random.choice(CLASSES['manager_level'])[0]
+        manager_level = random.choice(CLASSES["manager_level"])[0]
         manager_level_uuid = generate_uuid(manager_level)
 
-        manager_type = random.choice(CLASSES['manager_type'])[0]
+        manager_type = random.choice(CLASSES["manager_type"])[0]
         manager_type_uuid = generate_uuid(manager_type)
 
-        uuid = generate_uuid(str(employee_uuid) + str(org_unit_uuid) + str(responsibility_uuid))
+        uuid = generate_uuid(
+            str(employee_uuid) + str(org_unit_uuid) + str(responsibility_uuid)
+        )
 
         return Manager.from_simplified_fields(
             uuid=uuid,
@@ -412,34 +428,39 @@ def generate_managers(generate_uuid, employees, org_layers):
     return return_value
 
 
-def generate_associations(generate_uuid, employees, org_layers):
-
-    def construct_association(org_unit):
-        employee = random.choice(employees)
-
-        employee_uuid = employee.uuid
-        org_unit_uuid = org_unit.uuid
-
-        association_type = random.choice(CLASSES['association_type'])[0]
-        association_type_uuid = generate_uuid(association_type)
-
-        uuid = generate_uuid(str(employee_uuid) + str(org_unit_uuid) + str(association_type_uuid))
-
-        return Association.from_simplified_fields(
-            uuid=uuid,
-            org_unit_uuid=org_unit_uuid,
-            person_uuid=employee_uuid,
-            association_type_uuid=association_type_uuid,
-            from_date="1930-01-01",
-            to_date=None,
-        )
-
-    num_employees_per_org = 5
-
-    def construct_associations(org_unit):
-        return [construct_association(org_unit) for i in range(num_employees_per_org)]
-
-    return list(list(flatten(map(construct_associations, layer))) for layer in org_layers)
+# TODO: Reactivate after:
+#       https://git.magenta.dk/rammearkitektur/ra-data-models/-/merge_requests/28
+# def generate_associations(generate_uuid, employees, org_layers):
+#     def construct_association(org_unit):
+#         employee = random.choice(employees)
+#
+#         employee_uuid = employee.uuid
+#         org_unit_uuid = org_unit.uuid
+#
+#         association_type = random.choice(CLASSES["association_type"])[0]
+#         association_type_uuid = generate_uuid(association_type)
+#
+#         uuid = generate_uuid(
+#             str(employee_uuid) + str(org_unit_uuid) + str(association_type_uuid)
+#         )
+#
+#         return Association.from_simplified_fields(
+#             uuid=uuid,
+#             org_unit_uuid=org_unit_uuid,
+#             person_uuid=employee_uuid,
+#             association_type_uuid=association_type_uuid,
+#             from_date="1930-01-01",
+#             to_date=None,
+#         )
+#
+#     num_employees_per_org = 5
+#
+#     def construct_associations(org_unit):
+#         return [construct_association(org_unit) for i in range(num_employees_per_org)]
+#
+#     return list(
+#         list(flatten(map(construct_associations, layer))) for layer in org_layers
+#     )
 
 
 @click.command()
@@ -493,39 +514,57 @@ def generate(name: str, indent: int, lora_file, mo_file) -> None:
     employee_addresses = generate_employee_addresses(generate_uuid, seed, employees)
     engagement_layers = generate_engagements(generate_uuid, employees, org_layers)
     manager_layers = generate_managers(generate_uuid, employees, org_layers)
-    # TODO: Reactive after: https://git.magenta.dk/rammearkitektur/ra-data-models/-/merge_requests/28
+    # TODO: Reactivate after:
+    # https://git.magenta.dk/rammearkitektur/ra-data-models/-/merge_requests/28
     # association_layers = generate_associations(generate_uuid, employees, org_layers)
-    association_layers = []
+    association_layers: List[Any] = []
 
     # All employee addresses can be merged into the first layer of org-addresses,
     # as employees is a flat layer structure.
-    address_layers = list(map(apply(add), zip_longest(org_address_layers, [employee_addresses], fillvalue=[])))
+    address_layers = list(
+        map(
+            apply(add),
+            zip_longest(org_address_layers, [employee_addresses], fillvalue=[]),
+        )
+    )
+
+    def construct_chunk(
+        org_layer,
+        employee_layer,
+        address_layer,
+        engagement_layer,
+        manager_layer,
+        association_layer,
+    ) -> MOFlatFileFormatChunk:
+        return MOFlatFileFormatChunk(
+            org_units=org_layer,
+            address=address_layer,
+            employees=employee_layer,
+            engagements=engagement_layer,
+            manager=manager_layer,
+        )
 
     # mo_flatfile needs it
     # mo_flatfile needs role
     # mo_flatfile needs leave
     mo_flatfile = MOFlatFileFormat(
-        chunks=list(map(
-            apply(lambda org_layer, employee_layer, address_layer, engagement_layer, manager_layer, association_layer: MOFlatFileFormatChunk(
-                org_units=org_layer,
-                address=address_layer,
-                employees=employee_layer,
-                engagements=engagement_layer,
-                manager=manager_layer
-            )),
-            zip_longest(
-                org_layers,
-                [employees],
-                # Offset the following by one, by prepending an empty list.
-                # This ensures that their dependencies (i.e. org_units and employees)
-                # have been created in the chunk, before they are needed
-                prepend([], address_layers),
-                prepend([], engagement_layers),
-                prepend([], manager_layers),
-                prepend([], association_layers),
-                fillvalue=[]
+        chunks=list(
+            map(
+                apply(construct_chunk),
+                zip_longest(
+                    org_layers,
+                    [employees],
+                    # Offset the following by one, by prepending an empty list.
+                    # This ensures that their dependencies (i.e. org_units / employees)
+                    # have been created in the chunk, before they are needed
+                    prepend([], address_layers),
+                    prepend([], engagement_layers),
+                    prepend([], manager_layers),
+                    prepend([], association_layers),
+                    fillvalue=[],
+                ),
             )
-        ))
+        )
     )
     lora_file.write(lora_flatfile.json(indent=indent))
     mo_file.write(mo_flatfile.json(indent=indent))

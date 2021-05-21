@@ -13,9 +13,9 @@ keywords = ["os2mo", "lora"]
 python = "^3.8"
 click = "^7.1.2"
 pydantic = "^1.8.1"
-ramodels = "0.3.2"
-raclients = "0.1.4"
-ra-flatfile-importer = "^0.1.0"
+ramodels = "^0.3.3"
+ra-flatfile-importer = "^0.1.1"
+mimesis = "^4.1.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"

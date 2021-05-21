@@ -20,12 +20,30 @@ Successfully tagged ra-fixture-generator:latest
 ```
 After which you can run:
 ```
-docker run --rm ra-fixture-generator
+docker run --rm ra-fixture-generator --help
 ```
 Which yields:
 ```
-...
+Usage: fixture_generator.py [OPTIONS]
+
+  Flatfile Fixture Generator.
+
+  Used to generate flatfile fixture data (JSON) for OS2mo/LoRa.
+
+Options:
+  --name TEXT           Name of the root organization  [required]
+  --indent INTEGER      Pass 'indent' to json serializer
+  --lora-file FILENAME  Output Lora Flatfile  [required]
+  --mo-file FILENAME    Output OS2mo Flatfile  [required]
+  --help                Show this message and exit.
 ```
+At this point two flat files can be generated with:
+```
+docker run --rm -v $PWD:/srv/ ra-fixture-generator \
+    --name "Aarhus Kommune" --lora-file /srv/lora.json --mo-file /srv/mo.json
+```
+At which point two files `lora.json` and `mo.json` will be available in the current work-dir.
+These files can then be uploaded using the `ra-flatfile-importer`.
 
 ## Versioning
 This project uses [Semantic Versioning](https://semver.org/) with the following strategy:

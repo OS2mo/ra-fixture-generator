@@ -1,6 +1,14 @@
+#!/usr/bin/env python3
+# --------------------------------------------------------------------------------------
+# SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
+# SPDX-License-Identifier: MPL-2.0
+# --------------------------------------------------------------------------------------
 from functools import wraps
 from inspect import signature as func_signature
-from typing import Callable, Tuple, TypeVar
+from typing import Any
+from typing import Callable
+from typing import Tuple
+from typing import TypeVar
 
 CallableReturnType = TypeVar("CallableReturnType")
 
@@ -13,7 +21,7 @@ def has_self_arg(func):
 
 def apply(
     func: Callable[..., CallableReturnType]
-) -> Callable[[Tuple], CallableReturnType]:
+) -> Callable[[Any, Tuple], CallableReturnType]:
     """Decorator to apply tuple to function.
 
     Example:
