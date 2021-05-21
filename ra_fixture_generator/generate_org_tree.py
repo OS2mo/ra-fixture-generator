@@ -4,17 +4,23 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
+from typing import Callable
+from typing import Dict
+from typing import Iterator
+from typing import TypeVar
 
 from mimesis import Address
 
 
-def generate_cantina():
+def generate_cantina() -> Dict[str, Dict]:
     if random.random() > 0.5:
         return {"Kantine": {}}
     return {}
 
 
-def gen_schools_and_childcare(seed, num_schools=30, num_childcare=20):
+def gen_schools_and_childcare(
+    seed: str, num_schools: int = 30, num_childcare: int = 20
+) -> Dict[str, Dict]:
     address_gen = Address("da", seed=seed)
 
     def generate_school(_):
@@ -35,9 +41,9 @@ def gen_schools_and_childcare(seed, num_schools=30, num_childcare=20):
     return ret
 
 
-def gen_org_tree(seed):
+def gen_org_tree(seed: str) -> Dict[str, Dict]:
     random.seed(seed)
-    org_tree = {
+    return {
         "Borgmesterens Afdeling": {
             "Budget og Planlægning": {},
             "HR og organisation": {},
@@ -60,16 +66,28 @@ def gen_org_tree(seed):
         },
         "Social og sundhed": {},
     }
-    return org_tree
 
 
-def tree_visitor(tree, yield_func, level=1, prefix=""):
+CallableReturnType = TypeVar("CallableReturnType")
+
+
+def tree_visitor(
+    tree: Dict[str, Dict],
+    yield_func: Callable[[str, int, str], CallableReturnType],
+    level: int = 1,
+    prefix: str = "",
+) -> Iterator[CallableReturnType]:
     for name, children in tree.items():
         yield yield_func(name, level, prefix)
         yield from tree_visitor(children, yield_func, level + 1, prefix + name)
 
 
-def tree_visitor_levels(tree, yield_func, level=1, prefix=""):
+def tree_visitor_levels(
+    tree: Dict[str, Dict],
+    yield_func: Callable[[str, int, str], CallableReturnType],
+    level: int = 1,
+    prefix: str = "",
+) -> Iterator[CallableReturnType]:
     for name, children in tree.items():
         yield yield_func(name, level, prefix)
     for name, children in tree.items():

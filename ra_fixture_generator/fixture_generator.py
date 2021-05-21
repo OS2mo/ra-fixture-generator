@@ -204,7 +204,7 @@ def generate_facets_and_classes(
 
 
 def generate_org_units(
-    generate_uuid: Callable[[str], UUID], org_tree
+    generate_uuid: Callable[[str], UUID], org_tree: Dict[str, Dict]
 ) -> List[List[OrganisationUnit]]:
     def construct_org_unit(
         name: str, level: int, prefix: str
@@ -245,13 +245,17 @@ class PNummer(BaseSpecProvider):
         return self._gen_x_digit_number(10)
 
 
-def generate_org_addresses(generate_uuid, seed, org_layers):
+def generate_org_addresses(
+    generate_uuid: Callable[[str], UUID],
+    seed: str,
+    org_layers: List[List[OrganisationUnit]],
+) -> List[List[Address]]:
     code_gen = Code(seed=seed)
     internet_gen = Internet(seed=seed)
     person_gen = Person("da", seed=seed)
     pnummer_gen = PNummer(seed=seed)
 
-    def construct_addresses(org_unit):
+    def construct_addresses(org_unit: Organisation) -> List[Address]:
         org_unit_uuid = org_unit.uuid
 
         addresses = [
@@ -290,14 +294,18 @@ def generate_org_addresses(generate_uuid, seed, org_layers):
     return [list(flatten(map(construct_addresses, layer))) for layer in org_layers]
 
 
-def generate_employees(generate_uuid, seed, org_layers):
+def generate_employees(
+    generate_uuid: Callable[[str], UUID],
+    seed: str,
+    org_layers: List[List[OrganisationUnit]],
+) -> List[Employee]:
     person_gen = Person("da", seed=seed)
     danish_gen = DenmarkSpecProvider(seed=seed)
 
     num_orgs = ilen(flatten(org_layers))
     num_employees_per_org = 5
 
-    def generate_employee(_):
+    def generate_employee(_) -> Employee:
         def even(x: int) -> bool:
             return (x % 2) == 0
 
@@ -319,10 +327,12 @@ def generate_employees(generate_uuid, seed, org_layers):
     return list(map(generate_employee, range(num_employees_per_org * num_orgs)))
 
 
-def generate_employee_addresses(generate_uuid, seed, employees):
+def generate_employee_addresses(
+    generate_uuid: Callable[[str], UUID], seed: str, employees: List[Employee]
+) -> List[Address]:
     person_gen = Person("da", seed=seed)
 
-    def construct_addresses(employee):
+    def construct_addresses(employee: Employee) -> Address:
         employee_uuid = employee.uuid
 
         addresses = [
@@ -353,8 +363,14 @@ def generate_employee_addresses(generate_uuid, seed, employees):
     return list(flatten(map(construct_addresses, employees)))
 
 
-def generate_engagements(generate_uuid, employees, org_layers):
-    def construct_engagement(employee, org_unit):
+def generate_engagements(
+    generate_uuid: Callable[[str], UUID],
+    employees: List[Employee],
+    org_layers: List[List[OrganisationUnit]],
+) -> List[List[Engagement]]:
+    def construct_engagement(
+        employee: Employee, org_unit: OrganisationUnit
+    ) -> Engagement:
         employee_uuid = employee.uuid
         org_unit_uuid = org_unit.uuid
 
@@ -380,7 +396,7 @@ def generate_engagements(generate_uuid, employees, org_layers):
     num_employees_per_org = 5
     employee_iter = iter(employees)
 
-    def construct_engagements(org_unit):
+    def construct_engagements(org_unit: OrganisationUnit) -> List[Engagement]:
         org_employees = take(num_employees_per_org, employee_iter)
         assert len(org_employees) == num_employees_per_org
         return [construct_engagement(employee, org_unit) for employee in org_employees]
@@ -393,12 +409,16 @@ def generate_engagements(generate_uuid, employees, org_layers):
     return return_value
 
 
-def generate_managers(generate_uuid, employees, org_layers):
+def generate_managers(
+    generate_uuid: Callable[[str], UUID],
+    employees: List[Employee],
+    org_layers: List[List[OrganisationUnit]],
+) -> List[List[Manager]]:
 
     num_employees_per_org = 5
     employee_iter = iter(employees)
 
-    def construct_manager(org_unit):
+    def construct_manager(org_unit: OrganisationUnit) -> Manager:
         org_employees = take(num_employees_per_org, employee_iter)
         assert len(org_employees) == num_employees_per_org
 
