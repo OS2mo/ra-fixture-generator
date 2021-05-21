@@ -45,6 +45,12 @@ docker run --rm -v $PWD:/srv/ ra-fixture-generator \
 At which point two files `lora.json` and `mo.json` will be available in the current work-dir.
 These files can then be uploaded using the `ra-flatfile-importer`.
 
+For instance using:
+```
+docker run -i --rm ra-flatfile-importer lora upload --mox-url http://MOXURL:8080 < lora.json
+docker run -i --rm ra-flatfile-importer mo upload --mo-url http://MOURL:5000 < mo.json
+```
+
 ## Versioning
 This project uses [Semantic Versioning](https://semver.org/) with the following strategy:
 - MAJOR: Incompatible changes to existing data models
