@@ -15,9 +15,6 @@ from typing import Tuple
 from typing import Union
 
 import click
-from apply import apply
-from generate_org_tree import gen_org_tree
-from generate_org_tree import tree_visitor
 from mimesis import Code
 from mimesis import Internet
 from mimesis import Person
@@ -42,6 +39,10 @@ from ramodels.mo import Employee
 from ramodels.mo import Engagement
 from ramodels.mo import Manager
 from ramodels.mo import OrganisationUnit
+
+from ra_fixture_generator.apply import apply
+from ra_fixture_generator.generate_org_tree import gen_org_tree
+from ra_fixture_generator.generate_org_tree import tree_visitor
 
 # from ramodels.mo import Association
 
