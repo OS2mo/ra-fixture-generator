@@ -9,10 +9,14 @@ from itertools import zip_longest
 from operator import add
 from operator import itemgetter
 from typing import Any
+from typing import Callable
+from typing import cast
 from typing import Dict
+from typing import Iterator
 from typing import List
 from typing import Tuple
 from typing import Union
+from uuid import UUID
 
 import click
 from mimesis import Code
@@ -169,7 +173,7 @@ for facetbvn, classes in IN_CLASSES.items():
 def generate_facets_and_classes(
     generate_uuid, organisation
 ) -> Tuple[List[Facet], List[Klasse]]:
-    def construct_facets(facetbvn):
+    def construct_facets(facetbvn: str) -> Facet:
         facet = Facet.from_simplified_fields(
             uuid=generate_uuid(facetbvn),
             user_key=facetbvn,
@@ -178,7 +182,7 @@ def generate_facets_and_classes(
         return facet
 
     @apply
-    def construct_class(facetbvn, user_key, title, scope):
+    def construct_class(facetbvn: str, user_key: str, title: str, scope: str) -> Klasse:
         klasse = Klasse.from_simplified_fields(
             facet_uuid=generate_uuid(facetbvn),
             uuid=generate_uuid(user_key),
@@ -189,7 +193,7 @@ def generate_facets_and_classes(
         )
         return klasse
 
-    def yield_class():
+    def yield_class() -> Iterator[Tuple[str, str, str, str]]:
         for facetbvn, classes in CLASSES.items():
             for user_key, title, scope in classes:
                 yield facetbvn, user_key, title, scope
@@ -199,8 +203,12 @@ def generate_facets_and_classes(
     return facets, klasses
 
 
-def generate_org_units(generate_uuid, org_tree):
-    def construct_org_unit(name, level, prefix) -> Tuple[int, OrganisationUnit]:
+def generate_org_units(
+    generate_uuid: Callable[[str], UUID], org_tree
+) -> List[List[OrganisationUnit]]:
+    def construct_org_unit(
+        name: str, level: int, prefix: str
+    ) -> Tuple[int, OrganisationUnit]:
         parent_uuid = None
         if prefix:
             parent_uuid = generate_uuid("org_unit" + prefix)
@@ -486,8 +494,8 @@ def generate(name: str, indent: int, lora_file, mo_file) -> None:
     """
     seed = name
 
-    def generate_uuid(identifier):
-        return unseeded_generate_uuid(seed + identifier)
+    def generate_uuid(identifier: str) -> UUID:
+        return cast(UUID, unseeded_generate_uuid(seed + identifier))
 
     organisation = Organisation.from_simplified_fields(
         uuid=generate_uuid(""),

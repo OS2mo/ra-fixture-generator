@@ -5,7 +5,6 @@
 # --------------------------------------------------------------------------------------
 from functools import wraps
 from inspect import signature as func_signature
-from typing import Any
 from typing import Callable
 from typing import Tuple
 from typing import TypeVar
@@ -19,9 +18,7 @@ def has_self_arg(func):
     return args and args[0] in ("self", "cls")
 
 
-def apply(
-    func: Callable[..., CallableReturnType]
-) -> Callable[[Any, Tuple], CallableReturnType]:
+def apply(func: Callable[..., CallableReturnType]) -> Callable[..., CallableReturnType]:
     """Decorator to apply tuple to function.
 
     Example:
