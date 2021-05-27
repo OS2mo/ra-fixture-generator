@@ -46,6 +46,7 @@ from ramodels.mo import OrganisationUnit
 
 from ra_fixture_generator.apply import apply
 from ra_fixture_generator.generate_org_tree import gen_org_tree
+from ra_fixture_generator.generate_org_tree import OrgTree
 from ra_fixture_generator.generate_org_tree import tree_visitor
 
 # from ramodels.mo import Association
@@ -204,7 +205,7 @@ def generate_facets_and_classes(
 
 
 def generate_org_units(
-    generate_uuid: Callable[[str], UUID], org_tree: Dict[str, Dict]
+    generate_uuid: Callable[[str], UUID], org_tree: OrgTree
 ) -> List[List[OrganisationUnit]]:
     def construct_org_unit(
         name: str, level: int, prefix: str

@@ -12,7 +12,10 @@ from typing import TypeVar
 from mimesis import Address
 
 
-def generate_cantina() -> Dict[str, Dict]:
+OrgTree = Dict[str, Dict]
+
+
+def generate_cantina() -> OrgTree:
     if random.random() > 0.5:
         return {"Kantine": {}}
     return {}
@@ -20,7 +23,7 @@ def generate_cantina() -> Dict[str, Dict]:
 
 def gen_schools_and_childcare(
     seed: str, num_schools: int = 30, num_childcare: int = 20
-) -> Dict[str, Dict]:
+) -> OrgTree:
     address_gen = Address("da", seed=seed)
 
     def generate_school(_):
@@ -41,7 +44,7 @@ def gen_schools_and_childcare(
     return ret
 
 
-def gen_org_tree(seed: str) -> Dict[str, Dict]:
+def gen_org_tree(seed: str) -> OrgTree:
     random.seed(seed)
     return {
         "Borgmesterens Afdeling": {
@@ -72,7 +75,7 @@ CallableReturnType = TypeVar("CallableReturnType")
 
 
 def tree_visitor(
-    tree: Dict[str, Dict],
+    tree: OrgTree,
     yield_func: Callable[[str, int, str], CallableReturnType],
     level: int = 1,
     prefix: str = "",
@@ -83,7 +86,7 @@ def tree_visitor(
 
 
 def tree_visitor_levels(
-    tree: Dict[str, Dict],
+    tree: OrgTree,
     yield_func: Callable[[str, int, str], CallableReturnType],
     level: int = 1,
     prefix: str = "",
