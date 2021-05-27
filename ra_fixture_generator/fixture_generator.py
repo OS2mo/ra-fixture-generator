@@ -172,7 +172,7 @@ for facetbvn, classes in IN_CLASSES.items():
 
 
 def generate_facets_and_classes(
-    generate_uuid, organisation
+    generate_uuid: Callable[[str], UUID], organisation: Organisation
 ) -> Tuple[List[Facet], List[Klasse]]:
     def construct_facets(facetbvn: str) -> Facet:
         facet = Facet.from_simplified_fields(
@@ -249,6 +249,7 @@ class PNummer(BaseSpecProvider):
 def generate_org_addresses(
     generate_uuid: Callable[[str], UUID],
     seed: str,
+    organisation: Organisation,
     org_layers: List[List[OrganisationUnit]],
 ) -> List[List[Address]]:
     code_gen = Code(seed=seed)
@@ -285,7 +286,7 @@ def generate_org_addresses(
                 value=str(value),
                 value2=None,
                 address_type_uuid=address_type_uuid,
-                org_uuid=generate_uuid(""),
+                org_uuid=organisation.uuid,
                 from_date="1930-01-01",
                 org_unit_uuid=org_unit_uuid,
             )
@@ -329,7 +330,10 @@ def generate_employees(
 
 
 def generate_employee_addresses(
-    generate_uuid: Callable[[str], UUID], seed: str, employees: List[Employee]
+    generate_uuid: Callable[[str], UUID],
+    seed: str,
+    organisation: Organisation,
+    employees: List[Employee],
 ) -> List[Address]:
     person_gen = Person("da", seed=seed)
 
@@ -354,7 +358,7 @@ def generate_employee_addresses(
                 value=str(value),
                 value2=None,
                 address_type_uuid=address_type_uuid,
-                org_uuid=generate_uuid(""),
+                org_uuid=organisation.uuid,
                 from_date="1930-01-01",
                 person_uuid=employee_uuid,
             )
@@ -520,9 +524,13 @@ def generate_data(name: str) -> Tuple[LoraFlatFileFormat, MOFlatFileFormat]:
     org_tree = gen_org_tree(seed)
 
     org_layers = generate_org_units(generate_uuid, org_tree)
-    org_address_layers = generate_org_addresses(generate_uuid, seed, org_layers)
+    org_address_layers = generate_org_addresses(
+        generate_uuid, seed, organisation, org_layers
+    )
     employees = generate_employees(generate_uuid, seed, org_layers)
-    employee_addresses = generate_employee_addresses(generate_uuid, seed, employees)
+    employee_addresses = generate_employee_addresses(
+        generate_uuid, seed, organisation, employees
+    )
     engagement_layers = generate_engagements(generate_uuid, employees, org_layers)
     manager_layers = generate_managers(generate_uuid, employees, org_layers)
     # TODO: Reactivate after:
