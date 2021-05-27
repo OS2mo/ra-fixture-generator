@@ -492,26 +492,7 @@ def generate_managers(
 #     )
 
 
-@click.command()
-@click.option(
-    "--name",
-    help="Name of the root organization",
-    required=True,
-)
-@click.option(
-    "--indent", help="Pass 'indent' to json serializer", type=click.INT, default=None
-)
-@click.option(
-    "--lora-file", help="Output Lora Flatfile", type=click.File("w"), required=True
-)
-@click.option(
-    "--mo-file", help="Output OS2mo Flatfile", type=click.File("w"), required=True
-)
-def generate(name: str, indent: int, lora_file, mo_file) -> None:
-    """Flatfile Fixture Generator.
-
-    Used to generate flatfile fixture data (JSON) for OS2mo/LoRa.
-    """
+def generate_data(name: str) -> Tuple[LoraFlatFileFormat, MOFlatFileFormat]:
     seed = name
 
     def generate_uuid(identifier: str) -> UUID:
@@ -595,6 +576,30 @@ def generate(name: str, indent: int, lora_file, mo_file) -> None:
             )
         )
     )
+    return lora_flatfile, mo_flatfile
+
+
+@click.command()
+@click.option(
+    "--name",
+    help="Name of the root organization",
+    required=True,
+)
+@click.option(
+    "--indent", help="Pass 'indent' to json serializer", type=click.INT, default=None
+)
+@click.option(
+    "--lora-file", help="Output Lora Flatfile", type=click.File("w"), required=True
+)
+@click.option(
+    "--mo-file", help="Output OS2mo Flatfile", type=click.File("w"), required=True
+)
+def generate(name: str, indent: int, lora_file, mo_file) -> None:
+    """Flatfile Fixture Generator.
+
+    Used to generate flatfile fixture data (JSON) for OS2mo/LoRa.
+    """
+    lora_flatfile, mo_flatfile = generate_data(name)
     lora_file.write(lora_flatfile.json(indent=indent))
     mo_file.write(mo_flatfile.json(indent=indent))
 
