@@ -51,6 +51,20 @@ docker run -i --rm ra-flatfile-importer lora upload --mox-url http://MOXURL:8080
 docker run -i --rm ra-flatfile-importer mo upload --mo-url http://MOURL:5000 < mo.json
 ```
 
+Alternatively the two can be combined:
+```
+docker run -i --rm ra-fixture-generator \
+    --name "Aarhus Kommune" --lora-file - --mo-file /dev/null | \
+docker run -i --rm ra-flatfile-importer lora upload --mox-url http://MOXURL:8080
+```
+And similarily for MO:
+```
+docker run -i --rm ra-fixture-generator \
+   --name "Aarhus Kommune" --lora-file /dev/null --mo-file - | \
+docker run -i --rm ra-flatfile-importer mo upload --mo-url http://MOURL:5000
+```
+
+
 ## Versioning
 This project uses [Semantic Versioning](https://semver.org/) with the following strategy:
 - MAJOR: Incompatible changes to existing data models
