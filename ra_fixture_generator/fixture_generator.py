@@ -44,8 +44,8 @@ from ramodels.mo import Employee
 from ramodels.mo import Engagement
 from ramodels.mo import Manager
 from ramodels.mo import OrganisationUnit
+from ra_utils.apply import apply
 
-from ra_fixture_generator.apply import apply
 from ra_fixture_generator.generate_org_tree import gen_org_tree
 from ra_fixture_generator.generate_org_tree import OrgTree
 from ra_fixture_generator.generate_org_tree import tree_visitor
