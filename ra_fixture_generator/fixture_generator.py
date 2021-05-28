@@ -14,6 +14,7 @@ from typing import cast
 from typing import Dict
 from typing import Iterator
 from typing import List
+from typing import TextIO
 from typing import Tuple
 from typing import Union
 from uuid import UUID
@@ -307,7 +308,7 @@ def generate_employees(
     num_orgs = ilen(flatten(org_layers))
     num_employees_per_org = 5
 
-    def generate_employee(_) -> Employee:
+    def generate_employee(_: int) -> Employee:
         def even(x: int) -> bool:
             return (x % 2) == 0
 
@@ -548,12 +549,12 @@ def generate_data(name: str) -> Tuple[LoraFlatFileFormat, MOFlatFileFormat]:
     )
 
     def construct_chunk(
-        org_layer,
-        employee_layer,
-        address_layer,
-        engagement_layer,
-        manager_layer,
-        association_layer,
+        org_layer: List[OrganisationUnit],
+        employee_layer: List[Employee],
+        address_layer: List[Address],
+        engagement_layer: List[Engagement],
+        manager_layer: List[Manager],
+        association_layer: List[Any],
     ) -> MOFlatFileFormatChunk:
         return MOFlatFileFormatChunk(
             org_units=org_layer,
@@ -603,7 +604,7 @@ def generate_data(name: str) -> Tuple[LoraFlatFileFormat, MOFlatFileFormat]:
 @click.option(
     "--mo-file", help="Output OS2mo Flatfile", type=click.File("w"), required=True
 )
-def generate(name: str, indent: int, lora_file, mo_file) -> None:
+def generate(name: str, indent: int, lora_file: TextIO, mo_file: TextIO) -> None:
     """Flatfile Fixture Generator.
 
     Used to generate flatfile fixture data (JSON) for OS2mo/LoRa.

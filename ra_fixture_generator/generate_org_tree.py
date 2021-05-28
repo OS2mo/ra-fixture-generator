@@ -7,6 +7,7 @@ import random
 from typing import Callable
 from typing import Dict
 from typing import Iterator
+from typing import Tuple
 from typing import TypeVar
 
 from mimesis import Address
@@ -26,11 +27,11 @@ def gen_schools_and_childcare(
 ) -> OrgTree:
     address_gen = Address("da", seed=seed)
 
-    def generate_school(_):
+    def generate_school(_: int) -> Tuple[str, OrgTree]:
         name = address_gen.city() + " skole"
         return name, {}
 
-    def generate_childcare(_):
+    def generate_childcare(_: int) -> Tuple[str, OrgTree]:
         name = address_gen.city() + " børnehus"
         if random.random() > 0.5:
             return name, {"Administration": {}}
@@ -102,7 +103,7 @@ if __name__ == "__main__":
     org_tree = gen_org_tree(random_seed)
     print(org_tree)
 
-    def yield_func(name, level, prefix):
+    def yield_func(name: str, level: int, prefix: str) -> str:
         return "  " * (level - 1) + name
 
     for string in list(tree_visitor(org_tree, yield_func)):
