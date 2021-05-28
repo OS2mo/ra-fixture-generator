@@ -36,6 +36,7 @@ from ra_flatfile_importer.lora_flatfile_model import LoraFlatFileFormatChunk
 from ra_flatfile_importer.mo_flatfile_model import MOFlatFileFormat
 from ra_flatfile_importer.mo_flatfile_model import MOFlatFileFormatChunk
 from ra_flatfile_importer.util import generate_uuid as unseeded_generate_uuid
+from ra_utils.apply import apply
 from ramodels.lora import Facet
 from ramodels.lora import Klasse
 from ramodels.lora import Organisation
@@ -44,7 +45,6 @@ from ramodels.mo import Employee
 from ramodels.mo import Engagement
 from ramodels.mo import Manager
 from ramodels.mo import OrganisationUnit
-from ra_utils.apply import apply
 
 from ra_fixture_generator.generate_org_tree import gen_org_tree
 from ra_fixture_generator.generate_org_tree import OrgTree
