@@ -159,15 +159,13 @@ IN_CLASSES: Dict[str, List[Union[Tuple[str, str, str], str]]] = {
     "org_unit_hierarchy": [],
 }
 
-CLASSES: Dict[str, List[Tuple[str, str, str]]] = {}
-
-for facetbvn, classes in IN_CLASSES.items():
-    CLASSES[facetbvn] = list(
-        map(
-            lambda clazz: clazz if isinstance(clazz, tuple) else (clazz, clazz, "TEXT"),
-            classes,
-        )
-    )
+CLASSES: Dict[str, List[Tuple[str, str, str]]] = {
+    facetbvn: [
+        clazz if isinstance(clazz, tuple) else (clazz, clazz, "TEXT")
+        for clazz in classes
+    ]
+    for facetbvn, classes in IN_CLASSES.items()
+}
 
 
 def generate_facets_and_classes(
@@ -226,11 +224,9 @@ def generate_org_units(
     model_tree = list(tree_visitor(org_tree, construct_org_unit))
     model_layers = groupby(sorted(model_tree, key=itemgetter(0)), itemgetter(0))
 
-    layers = []
-    for level, model_layer in model_layers:
-        layer = list(map(itemgetter(1), model_layer))
-        layers.append(layer)
-    return layers
+    return [
+        list(map(itemgetter(1), model_layer)) for level, model_layer in model_layers
+    ]
 
 
 class PNummer(BaseSpecProvider):
@@ -257,7 +253,7 @@ def generate_org_addresses(
     person_gen = Person("da", seed=seed)
     pnummer_gen = PNummer(seed=seed)
 
-    def construct_addresses(org_unit: Organisation) -> List[Address]:
+    def construct_addresses(org_unit: OrganisationUnit) -> List[Address]:
         org_unit_uuid = org_unit.uuid
 
         addresses = [
@@ -337,7 +333,7 @@ def generate_employee_addresses(
 ) -> List[Address]:
     person_gen = Person("da", seed=seed)
 
-    def construct_addresses(employee: Employee) -> Address:
+    def construct_addresses(employee: Employee) -> List[Address]:
         employee_uuid = employee.uuid
 
         addresses = [
@@ -453,7 +449,6 @@ def generate_managers(
             manager_level_uuid=manager_level_uuid,
             manager_type_uuid=manager_type_uuid,
             from_date="1930-01-01",
-            to_date=None,
         )
 
     return_value = list(list(map(construct_manager, layer)) for layer in org_layers)
@@ -462,8 +457,12 @@ def generate_managers(
     return return_value
 
 
-def generate_associations(generate_uuid, employees, org_layers):
-    def construct_association(org_unit):
+def generate_associations(
+    generate_uuid: Callable[[str], UUID],
+    employees: List[Employee],
+    org_layers: List[List[OrganisationUnit]],
+) -> List[List[Association]]:
+    def construct_association(org_unit: OrganisationUnit) -> Association:
         employee = random.choice(employees)
 
         employee_uuid = employee.uuid
@@ -487,7 +486,7 @@ def generate_associations(generate_uuid, employees, org_layers):
 
     num_employees_per_org = 5
 
-    def construct_associations(org_unit):
+    def construct_associations(org_unit: OrganisationUnit) -> List[Association]:
         return [construct_association(org_unit) for _ in range(num_employees_per_org)]
 
     return list(

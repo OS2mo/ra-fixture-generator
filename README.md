@@ -104,8 +104,8 @@ Magenta ApS <https://magenta.dk>
 TODO: README section missing!
 -->
 ## License
-- This project: [MPL-2.0](MPL-2.0.txt)
+- This project: [MPL-2.0](LICENSES/MPL-2.0.txt)
 - Dependencies:
-  - pydantic: [MIT](MIT.txt)
+  - pydantic: [MIT](LICENSES/MIT.txt)
 
 This project uses [REUSE](https://reuse.software) for licensing. All licenses can be found in the [LICENSES folder](LICENSES/) of the project.
