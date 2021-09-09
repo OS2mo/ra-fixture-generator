@@ -5,4 +5,4 @@
 # --------------------------------------------------------------------------------------
 from ra_utils.semantic_version_type import SemanticVersion
 
-__version__: SemanticVersion = SemanticVersion("0.1.0")
+__version__: SemanticVersion = SemanticVersion("0.2.0")
