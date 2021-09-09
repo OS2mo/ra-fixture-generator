@@ -10,7 +10,6 @@ from operator import add
 from operator import itemgetter
 from typing import Any
 from typing import Callable
-from typing import cast
 from typing import Dict
 from typing import Iterator
 from typing import List
@@ -20,6 +19,7 @@ from typing import Union
 from uuid import UUID
 
 import click
+import ra_utils.generate_uuid
 from mimesis import Code
 from mimesis import Internet
 from mimesis import Person
@@ -35,22 +35,20 @@ from ra_flatfile_importer.lora_flatfile_model import LoraFlatFileFormat
 from ra_flatfile_importer.lora_flatfile_model import LoraFlatFileFormatChunk
 from ra_flatfile_importer.mo_flatfile_model import MOFlatFileFormat
 from ra_flatfile_importer.mo_flatfile_model import MOFlatFileFormatChunk
-from ra_flatfile_importer.util import generate_uuid as unseeded_generate_uuid
 from ra_utils.apply import apply
 from ramodels.lora import Facet
 from ramodels.lora import Klasse
 from ramodels.lora import Organisation
-from ramodels.mo import Address
 from ramodels.mo import Employee
-from ramodels.mo import Engagement
-from ramodels.mo import Manager
 from ramodels.mo import OrganisationUnit
+from ramodels.mo.details import Address
+from ramodels.mo.details import Association
+from ramodels.mo.details import Engagement
+from ramodels.mo.details import Manager
 
 from ra_fixture_generator.generate_org_tree import gen_org_tree
 from ra_fixture_generator.generate_org_tree import OrgTree
 from ra_fixture_generator.generate_org_tree import tree_visitor
-
-# from ramodels.mo import Association
 
 IN_CLASSES: Dict[str, List[Union[Tuple[str, str, str], str]]] = {
     "engagement_job_function": [
@@ -222,6 +220,7 @@ def generate_org_units(
             org_unit_type_uuid=generate_uuid("Afdeling"),
             org_unit_level_uuid=generate_uuid("N" + str(level)),
             parent_uuid=parent_uuid,
+            from_date="2020-05-04",
         )
 
     model_tree = list(tree_visitor(org_tree, construct_org_unit))
@@ -450,7 +449,7 @@ def generate_managers(
             uuid=uuid,
             org_unit_uuid=org_unit_uuid,
             person_uuid=employee_uuid,
-            responsibility_uuid=responsibility_uuid,
+            responsibility_uuids=[responsibility_uuid],
             manager_level_uuid=manager_level_uuid,
             manager_type_uuid=manager_type_uuid,
             from_date="1930-01-01",
@@ -463,46 +462,43 @@ def generate_managers(
     return return_value
 
 
-# TODO: Reactivate after:
-#       https://git.magenta.dk/rammearkitektur/ra-data-models/-/merge_requests/28
-# def generate_associations(generate_uuid, employees, org_layers):
-#     def construct_association(org_unit):
-#         employee = random.choice(employees)
-#
-#         employee_uuid = employee.uuid
-#         org_unit_uuid = org_unit.uuid
-#
-#         association_type = random.choice(CLASSES["association_type"])[0]
-#         association_type_uuid = generate_uuid(association_type)
-#
-#         uuid = generate_uuid(
-#             str(employee_uuid) + str(org_unit_uuid) + str(association_type_uuid)
-#         )
-#
-#         return Association.from_simplified_fields(
-#             uuid=uuid,
-#             org_unit_uuid=org_unit_uuid,
-#             person_uuid=employee_uuid,
-#             association_type_uuid=association_type_uuid,
-#             from_date="1930-01-01",
-#             to_date=None,
-#         )
-#
-#     num_employees_per_org = 5
-#
-#     def construct_associations(org_unit):
-#         return [construct_association(org_unit) for i in range(num_employees_per_org)]
-#
-#     return list(
-#         list(flatten(map(construct_associations, layer))) for layer in org_layers
-#     )
+def generate_associations(generate_uuid, employees, org_layers):
+    def construct_association(org_unit):
+        employee = random.choice(employees)
+
+        employee_uuid = employee.uuid
+        org_unit_uuid = org_unit.uuid
+
+        association_type = random.choice(CLASSES["association_type"])[0]
+        association_type_uuid = generate_uuid(association_type)
+
+        uuid = generate_uuid(
+            str(employee_uuid) + str(org_unit_uuid) + str(association_type_uuid)
+        )
+
+        return Association.from_simplified_fields(
+            uuid=uuid,
+            org_unit_uuid=org_unit_uuid,
+            person_uuid=employee_uuid,
+            association_type_uuid=association_type_uuid,
+            from_date="1930-01-01",
+            to_date=None,
+        )
+
+    num_employees_per_org = 5
+
+    def construct_associations(org_unit):
+        return [construct_association(org_unit) for _ in range(num_employees_per_org)]
+
+    return list(
+        list(flatten(map(construct_associations, layer))) for layer in org_layers
+    )
 
 
 def generate_data(name: str) -> Tuple[LoraFlatFileFormat, MOFlatFileFormat]:
     seed = name
 
-    def generate_uuid(identifier: str) -> UUID:
-        return cast(UUID, unseeded_generate_uuid(seed + identifier))
+    generate_uuid = ra_utils.generate_uuid.uuid_generator(seed)
 
     organisation = Organisation.from_simplified_fields(
         uuid=generate_uuid(""),
@@ -534,10 +530,7 @@ def generate_data(name: str) -> Tuple[LoraFlatFileFormat, MOFlatFileFormat]:
     )
     engagement_layers = generate_engagements(generate_uuid, employees, org_layers)
     manager_layers = generate_managers(generate_uuid, employees, org_layers)
-    # TODO: Reactivate after:
-    # https://git.magenta.dk/rammearkitektur/ra-data-models/-/merge_requests/28
-    # association_layers = generate_associations(generate_uuid, employees, org_layers)
-    association_layers: List[Any] = []
+    association_layers = generate_associations(generate_uuid, employees, org_layers)
 
     # All employee addresses can be merged into the first layer of org-addresses,
     # as employees is a flat layer structure.
@@ -562,6 +555,7 @@ def generate_data(name: str) -> Tuple[LoraFlatFileFormat, MOFlatFileFormat]:
             employees=employee_layer,
             engagements=engagement_layer,
             manager=manager_layer,
+            association_layer=association_layer,
         )
 
     # mo_flatfile needs it
