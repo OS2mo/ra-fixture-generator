@@ -1,74 +1,62 @@
---- # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-# Global
+# SPDX-FileCopyrightText: 2021 Magenta ApS
+# SPDX-License-Identifier: MPL-2.0
+
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.cache/pre-commit"
 
-cache:
-  key: "${CI_JOB_NAME}"
-  paths:
-    - .venv/
-    - .cache/pip
-    - .cache/pre-commit
 
 stages:
   - lint
   - test
-  - deploy
+  - prepare-release
+  - release
 
 # ---------------------------------------------------------------------------
 # Templates
 # ---------------------------------------------------------------------------
-.install-deps-template: &install-deps
-  before_script:
-    - pip install poetry
-    - poetry --version
-    - poetry config virtualenvs.in-project true
-    - poetry install -vv
-    - poetry run pre-commit install
+include:
+  - project: labs/salt-automation
+    file: gitlab-ci-templates/common/autopub.v1.yml
+  - project: rammearkitektur/gitlab-ci-templates
+    file: templates/poetry-precommit.yml
 
-.lint-template: &lint
-  <<: *install-deps
-  image: python:3.8
-  stage: lint
-
-.test-template: &test # Coverage needed too
-  <<: *install-deps
-  needs: []
-  stage: test
-  script: poetry run pytest
-
-.deploy-template: &deploy
-  <<: *install-deps
-  image: python:3.8
-  stage: deploy
-  rules:
-    # Matches <version core> from SemVer 2.0.0 BNF grammar. Ex. 2.3.4, but not 2.3.4-rc
-    - if: $CI_COMMIT_TAG =~ /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/
 
 # ---------------------------------------------------------------------------
 # Lint
 # ---------------------------------------------------------------------------
-Lint Project:
-  <<: *lint
+Lint Python:
+  extends: .lint-python
+  stage: lint
   script:
     - poetry run pre-commit run --all-files
+
 
 # ---------------------------------------------------------------------------
 # Test
 # ---------------------------------------------------------------------------
-Test on Python 3.8:
-  <<: *test
-  image: python:3.8
+.test-template: &test
+  extends: .test-python
+  stage: test
+  needs: []
 
 Test on Python 3.9:
   <<: *test
   image: python:3.9
 
+Test on Python 3.10:
+  <<: *test
+  image: python:3.10
+
+
 # ---------------------------------------------------------------------------
-# Deploy
+# Release
 # ---------------------------------------------------------------------------
-Deploy to PyPI:
-  <<: *deploy
+Release to PyPI:
+  extends: .install-deps
+  image: python:3.9
+  stage: release
+  rules:
+    # Matches <version core> from SemVer 2.0.0 BNF grammar. Ex. 2.3.4, but not 2.3.4-rc
+    - if: $CI_COMMIT_TAG =~ /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/
   script: poetry publish --build -u OS2mo -p $PYPI_PWD
