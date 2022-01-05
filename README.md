@@ -6,7 +6,7 @@ SPDX-License-Identifier: MPL-2.0
 
 # RA Fixture Generator
 
-OS2mo/LoRa Flatfile Fixture Generator.
+OS2mo Flatfile Fixture Generator.
 
 ## Usage
 ```
@@ -24,43 +24,36 @@ docker run --rm ra-fixture-generator --help
 ```
 Which yields:
 ```
-Usage: fixture_generator.py [OPTIONS]
+Usage: ra_fixture_generator [OPTIONS]
 
   Flatfile Fixture Generator.
 
-  Used to generate flatfile fixture data (JSON) for OS2mo/LoRa.
+  Used to generate flatfile fixture data (JSON) for OS2mo.
 
 Options:
-  --name TEXT           Name of the root organization  [required]
+  --root-org-name TEXT  Name of the root organisation  [env var: ROOT_ORG_NAME; default: Magenta Aps]
+  --size INTEGER        Size of the generated dataset  [env var: FIXTURE_SIZE; default: 10]
   --indent INTEGER      Pass 'indent' to json serializer
-  --lora-file FILENAME  Output Lora Flatfile  [required]
   --mo-file FILENAME    Output OS2mo Flatfile  [required]
   --help                Show this message and exit.
 ```
-At this point two flat files can be generated with:
+At this point, the flat file can be generated with:
 ```
 docker run --rm -v $PWD:/srv/ ra-fixture-generator \
     --name "Aarhus Kommune" --lora-file /srv/lora.json --mo-file /srv/mo.json
 ```
-At which point two files `lora.json` and `mo.json` will be available in the current work-dir.
-These files can then be uploaded using the `ra-flatfile-importer`.
+At which point the file `mo.json` will be available in the current work-dir.
+This file can then be uploaded using the `ra-flatfile-importer`.
 
 For instance using:
 ```
-docker run -i --rm ra-flatfile-importer lora upload --mox-url http://MOXURL:8080 < lora.json
 docker run -i --rm ra-flatfile-importer mo upload --mo-url http://MOURL:5000 < mo.json
 ```
 
 Alternatively the two can be combined:
 ```
 docker run -i --rm ra-fixture-generator \
-    --name "Aarhus Kommune" --lora-file - --mo-file /dev/null | \
-docker run -i --rm ra-flatfile-importer lora upload --mox-url http://MOXURL:8080
-```
-And similarily for MO:
-```
-docker run -i --rm ra-fixture-generator \
-   --name "Aarhus Kommune" --lora-file /dev/null --mo-file - | \
+   --name "Aarhus Kommune" --mo-file - | \
 docker run -i --rm ra-flatfile-importer mo upload --mo-url http://MOURL:5000
 ```
 

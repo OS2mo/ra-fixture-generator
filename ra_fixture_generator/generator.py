@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+# --------------------------------------------------------------------------------------
+# SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
+# SPDX-License-Identifier: MPL-2.0
+# --------------------------------------------------------------------------------------
+import itertools
+import math
+import random
+from itertools import zip_longest
+from operator import add
+from typing import List
+
+from more_itertools import prepend
+from ra_flatfile_importer.mo.models import MOFlatFileFormat
+from ra_flatfile_importer.mo.models import MOFlatFileFormatChunk
+from ra_utils.apply import apply
+from ra_utils.generate_uuid import generate_uuid
+from ramodels.lora import Organisation
+from ramodels.mo import Employee
+from ramodels.mo import OrganisationUnit
+from ramodels.mo.details import Address
+from ramodels.mo.details import Association
+from ramodels.mo.details import Engagement
+from ramodels.mo.details import Manager
+
+from .generators.association import AssociationGenerator
+from .generators.classes import ClassGenerator
+from .generators.classes import default_classes
+from .generators.employee import EmployeeGenerator
+from .generators.employee_address import EmployeeAddressGenerator
+from .generators.engagement import EngagementGenerator
+from .generators.manager import ManagerGenerator
+from .generators.org_address import OrgAddressGenerator
+from .generators.org_tree import OrgTreeGenerator
+from .generators.org_unit import OrgUnitGenerator
+
+
+def generate_data(name: str, size: int) -> MOFlatFileFormat:
+    random.seed(name)
+    employees_per_org = max(int(math.log2(size)), 3)
+
+    organisation = Organisation.from_simplified_fields(
+        uuid=generate_uuid(name, ""),
+        name=name,
+        user_key=name,
+    )
+
+    classes = ClassGenerator(seed=name).generate(org_uuid=organisation.uuid)
+
+    org_tree = OrgTreeGenerator(seed=name).generate(
+        size=size,
+    )
+    org_layers = OrgUnitGenerator(seed=name).generate(
+        org_tree=org_tree,
+    )
+    org_address_layers = OrgAddressGenerator(seed=name).generate(
+        organisation=organisation,
+        org_layers=org_layers,
+    )
+
+    employees = EmployeeGenerator(seed=name).generate(
+        org_layers=org_layers,
+        employees_per_org=employees_per_org,
+    )
+    employee_addresses = EmployeeAddressGenerator(seed=name).generate(
+        organisation=organisation,
+        employees=employees,
+    )
+    engagement_layers = EngagementGenerator(seed=name).generate(
+        employees=employees,
+        org_layers=org_layers,
+        job_functions=default_classes["engagement_job_function"],
+        engagement_types=default_classes["engagement_type"],
+        employees_per_org=employees_per_org,
+    )
+    manager_layers = ManagerGenerator(seed=name).generate(
+        org_layers=org_layers,
+        employees=employees,
+        responsibilities=default_classes["responsibility"],
+        manager_levels=default_classes["manager_level"],
+        manager_types=default_classes["manager_type"],
+        employees_per_org=employees_per_org,
+    )
+    association_layers = AssociationGenerator(seed=name).generate(
+        org_layers=org_layers,
+        employees=employees,
+        association_types=default_classes["association_type"],
+        employees_per_org=employees_per_org,
+    )
+
+    # All employee addresses can be merged into the first layer of org-addresses,
+    # as employees is a flat layer structure.
+    address_layers = list(
+        map(
+            apply(add),
+            zip_longest(org_address_layers, [employee_addresses], fillvalue=[]),
+        )
+    )
+
+    def construct_chunk(
+        org_layer: List[OrganisationUnit],
+        employee_layer: List[Employee],
+        address_layer: List[Address],
+        engagement_layer: List[Engagement],
+        manager_layer: List[Manager],
+        association_layer: List[Association],
+    ) -> MOFlatFileFormatChunk:
+        return MOFlatFileFormatChunk(
+            org_units=org_layer,
+            address=address_layer,
+            employees=employee_layer,
+            engagements=engagement_layer,
+            manager=manager_layer,
+            associations=association_layer,
+        )
+
+    # TODO: mo_flatfile needs it
+    # TODO: mo_flatfile needs role
+    # TODO: mo_flatfile needs leave
+    # TODO: What about classes?
+
+    # TODO
+    # lora_flatfile = LoraFlatFileFormat(
+    #     chunks=[
+    #         LoraFlatFileFormatChunk(organisation=organisation),
+    #         LoraFlatFileFormatChunk(
+    #             facetter=facets,
+    #         ),
+    #         LoraFlatFileFormatChunk(klasser=klasses),
+    #     ],
+    # )
+    # TODO
+
+
+    prerequisites = [
+        MOFlatFileFormatChunk(
+            classes=classes,
+        )
+    ]
+    chunks = itertools.chain(
+        prerequisites,
+        map(
+            apply(construct_chunk),
+            zip_longest(
+                org_layers,
+                [employees],
+                # Offset the following by one, by prepending an empty list.
+                # This ensures that their dependencies (i.e. org_units/employees)
+                # have been created in the chunk, before they are needed
+                prepend([], address_layers),
+                prepend([], engagement_layers),
+                prepend([], manager_layers),
+                prepend([], association_layers),
+                fillvalue=[],
+            ),
+        ),
+    )
+    mo_flatfile = MOFlatFileFormat(chunks=list(chunks))
+    return mo_flatfile
