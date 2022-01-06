@@ -7,7 +7,6 @@ from typing import List
 
 import more_itertools
 from mimesis import Person
-from ramodels.lora import Organisation
 from ramodels.mo import Employee
 from ramodels.mo.details import Address
 
@@ -19,9 +18,7 @@ class EmployeeAddressGenerator(BaseGenerator):
         super().__init__(seed)
         self.person_gen = Person("da", seed=seed)
 
-    def generate(
-        self, organisation: Organisation, employees: List[Employee]
-    ) -> List[Address]:
+    def generate(self, employees: List[Employee]) -> List[Address]:
         def construct_addresses(employee: Employee) -> List[Address]:
             employee_uuid = employee.uuid
 
@@ -46,7 +43,6 @@ class EmployeeAddressGenerator(BaseGenerator):
                     value=str(value),
                     value2=None,
                     address_type_uuid=address_type_uuid,
-                    org_uuid=organisation.uuid,
                     from_date="1930-01-01",  # todo: ensure this isn't before the associated org_unit or person
                     person_uuid=employee_uuid,
                 )

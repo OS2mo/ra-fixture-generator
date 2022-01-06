@@ -10,12 +10,11 @@ from mimesis import Code
 from mimesis import Internet
 from mimesis import Person
 from mimesis.enums import EANFormat
-from ramodels.lora import Organisation
 from ramodels.mo import OrganisationUnit
 from ramodels.mo.details import Address
 
-from ..util import PNummer
 from .base import BaseGenerator
+from ..util import PNummer
 
 
 class OrgAddressGenerator(BaseGenerator):
@@ -26,9 +25,7 @@ class OrgAddressGenerator(BaseGenerator):
         self.person_gen = Person("da", seed=seed)
         self.pnummer_gen = PNummer(seed=seed)
 
-    def generate(
-        self, organisation: Organisation, org_layers: List[List[OrganisationUnit]]
-    ) -> List[List[Address]]:
+    def generate(self, org_layers: List[List[OrganisationUnit]]) -> List[List[Address]]:
         def construct_addresses(org_unit: OrganisationUnit) -> List[Address]:
             org_unit_uuid = org_unit.uuid
 
@@ -61,7 +58,6 @@ class OrgAddressGenerator(BaseGenerator):
                     value=str(value),
                     value2=None,
                     address_type_uuid=address_type_uuid,
-                    org_uuid=organisation.uuid,
                     from_date="1930-01-01",
                     org_unit_uuid=org_unit_uuid,
                 )

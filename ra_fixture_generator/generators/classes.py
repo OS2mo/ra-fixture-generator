@@ -6,7 +6,6 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 from typing import Union
-from uuid import UUID
 
 from ramodels.mo import FacetClass
 
@@ -131,7 +130,7 @@ default_classes: Dict[str, List[Tuple[str, str, str]]] = {
 
 
 class ClassGenerator(BaseGenerator):
-    def generate(self, org_uuid: UUID) -> List[FacetClass]:
+    def generate(self) -> List[FacetClass]:
         return [
             FacetClass(
                 facet_uuid=self.generate_uuid(facet_bvn),
@@ -139,7 +138,6 @@ class ClassGenerator(BaseGenerator):
                 name=name,
                 user_key=bvn,
                 scope=scope,
-                org_uuid=org_uuid,
             )
             for facet_bvn, classes in default_classes.items()
             for (bvn, name, scope) in classes

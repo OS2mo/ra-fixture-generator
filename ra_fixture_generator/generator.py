@@ -39,13 +39,7 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
     random.seed(name)
     employees_per_org = max(2 * int(math.log2(size)), 3)
 
-    organisation = Organisation.from_simplified_fields(
-        uuid=generate_uuid(name, ""),
-        name=name,
-        user_key=name,
-    )
-
-    classes = ClassGenerator(seed=name).generate(org_uuid=organisation.uuid)
+    classes = ClassGenerator(seed=name).generate()
 
     org_tree = OrgTreeGenerator(seed=name).generate(
         size=size,
@@ -54,7 +48,6 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
         org_tree=org_tree,
     )
     org_address_layers = OrgAddressGenerator(seed=name).generate(
-        organisation=organisation,
         org_layers=org_layers,
     )
 
@@ -63,7 +56,6 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
         employees_per_org=employees_per_org,
     )
     employee_addresses = EmployeeAddressGenerator(seed=name).generate(
-        organisation=organisation,
         employees=employees,
     )
     engagement_layers = EngagementGenerator(seed=name).generate(
@@ -130,7 +122,6 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
     #     ],
     # )
     # TODO
-
 
     prerequisites = [
         MOFlatFileFormatChunk(
