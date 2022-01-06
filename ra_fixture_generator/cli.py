@@ -15,15 +15,6 @@ from .generator import generate_data
     ),
 )
 @click.option(
-    "--root-org-name",
-    help="Name of the root organisation.",
-    type=click.STRING,
-    default="Magenta Aps",
-    show_default=True,
-    envvar="ROOT_ORG_NAME",
-    show_envvar=True,
-)
-@click.option(
     "-s",
     "--size",
     help=(
@@ -50,7 +41,7 @@ from .generator import generate_data
     type=click.File("w"),
     default="-",
 )
-def generate(root_org_name: str, size: int, indent: int, output_file: TextIO) -> None:
+def generate(size: int, indent: int, output_file: TextIO) -> None:
     """Flatfile Fixture Generator.
 
     Used to generate flatfile fixture data (JSON) for OS2mo.

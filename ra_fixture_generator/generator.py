@@ -3,9 +3,7 @@
 # SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
-import itertools
 import math
-import random
 from itertools import zip_longest
 from operator import add
 from typing import List
@@ -14,8 +12,6 @@ from more_itertools import prepend
 from ra_flatfile_importer.mo.models import MOFlatFileFormat
 from ra_flatfile_importer.mo.models import MOFlatFileFormatChunk
 from ra_utils.apply import apply
-from ra_utils.generate_uuid import generate_uuid
-from ramodels.lora import Organisation
 from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
 from ramodels.mo.details import Address
@@ -24,8 +20,6 @@ from ramodels.mo.details import Engagement
 from ramodels.mo.details import Manager
 
 from .generators.association import AssociationGenerator
-from .generators.classes import ClassGenerator
-from .generators.classes import default_classes
 from .generators.employee import EmployeeGenerator
 from .generators.employee_address import EmployeeAddressGenerator
 from .generators.engagement import EngagementGenerator
@@ -109,40 +103,21 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
     # TODO: mo_flatfile needs leave
     # TODO: What about classes?
 
-    # TODO
-    # lora_flatfile = LoraFlatFileFormat(
-    #     chunks=[
-    #         LoraFlatFileFormatChunk(organisation=organisation),
-    #         LoraFlatFileFormatChunk(
-    #             facetter=facets,
-    #         ),
-    #         LoraFlatFileFormatChunk(klasser=klasses),
-    #     ],
-    # )
-    # TODO
-
-    prerequisites = [
-        MOFlatFileFormatChunk(
-            classes=classes,
-        )
-    ]
-    chunks = itertools.chain(
-        prerequisites,
-        map(
-            apply(construct_chunk),
-            zip_longest(
-                org_layers,
-                [employees],
-                # Offset the following by one, by prepending an empty list.
-                # This ensures that their dependencies (i.e. org_units/employees)
-                # have been created in the chunk, before they are needed
-                prepend([], address_layers),
-                prepend([], engagement_layers),
-                prepend([], manager_layers),
-                prepend([], association_layers),
-                fillvalue=[],
-            ),
+    chunks = map(
+        apply(construct_chunk),
+        zip_longest(
+            org_layers,
+            [employees],
+            # Offset the following by one, by prepending an empty list.
+            # This ensures that their dependencies (i.e. org_units/employees)
+            # have been created in the chunk, before they are needed
+            prepend([], address_layers),
+            prepend([], engagement_layers),
+            prepend([], manager_layers),
+            prepend([], association_layers),
+            fillvalue=[],
         ),
     )
+
     mo_flatfile = MOFlatFileFormat(chunks=list(chunks))
     return mo_flatfile
