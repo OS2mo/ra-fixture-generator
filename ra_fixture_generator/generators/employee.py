@@ -15,10 +15,10 @@ from .base import BaseGenerator
 
 
 class EmployeeGenerator(BaseGenerator):
-    def __init__(self, seed: str = None) -> None:
-        super().__init__(seed)
-        self.person_gen = Person("da", seed=seed)
-        self.danish_gen = DenmarkSpecProvider(seed=seed)
+    def __init__(self) -> None:
+        super().__init__()
+        self.person_gen = Person("da")
+        self.danish_gen = DenmarkSpecProvider()
 
     def generate(
         self, org_layers: List[List[OrganisationUnit]], employees_per_org: int = 10

@@ -14,9 +14,9 @@ from .base import BaseGenerator
 
 
 class EmployeeAddressGenerator(BaseGenerator):
-    def __init__(self, seed: str = None) -> None:
-        super().__init__(seed)
-        self.person_gen = Person("da", seed=seed)
+    def __init__(self) -> None:
+        super().__init__()
+        self.person_gen = Person("da")
 
     def generate(self, employees: List[Employee]) -> List[Address]:
         def construct_addresses(employee: Employee) -> List[Address]:

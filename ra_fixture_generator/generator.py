@@ -39,33 +39,31 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
     random.seed(name)
     employees_per_org = max(2 * int(math.log2(size)), 3)
 
-    classes = ClassGenerator(seed=name).generate()
-
-    org_tree = OrgTreeGenerator(seed=name).generate(
+    org_tree = OrgTreeGenerator().generate(
         size=size,
     )
-    org_layers = OrgUnitGenerator(seed=name).generate(
+    org_layers = OrgUnitGenerator().generate(
         org_tree=org_tree,
     )
-    org_address_layers = OrgAddressGenerator(seed=name).generate(
+    org_address_layers = OrgAddressGenerator().generate(
         org_layers=org_layers,
     )
 
-    employees = EmployeeGenerator(seed=name).generate(
+    employees = EmployeeGenerator().generate(
         org_layers=org_layers,
         employees_per_org=employees_per_org,
     )
-    employee_addresses = EmployeeAddressGenerator(seed=name).generate(
+    employee_addresses = EmployeeAddressGenerator().generate(
         employees=employees,
     )
-    engagement_layers = EngagementGenerator(seed=name).generate(
+    engagement_layers = EngagementGenerator().generate(
         employees=employees,
         org_layers=org_layers,
         job_functions=default_classes["engagement_job_function"],
         engagement_types=default_classes["engagement_type"],
         employees_per_org=employees_per_org,
     )
-    manager_layers = ManagerGenerator(seed=name).generate(
+    manager_layers = ManagerGenerator().generate(
         org_layers=org_layers,
         employees=employees,
         responsibilities=default_classes["responsibility"],
@@ -73,7 +71,7 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
         manager_types=default_classes["manager_type"],
         employees_per_org=employees_per_org,
     )
-    association_layers = AssociationGenerator(seed=name).generate(
+    association_layers = AssociationGenerator().generate(
         org_layers=org_layers,
         employees=employees,
         association_types=default_classes["association_type"],

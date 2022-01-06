@@ -18,12 +18,12 @@ from ..util import PNummer
 
 
 class OrgAddressGenerator(BaseGenerator):
-    def __init__(self, seed: str = None) -> None:
-        super().__init__(seed)
-        self.code_gen = Code(seed=seed)
-        self.internet_gen = Internet(seed=seed)
-        self.person_gen = Person("da", seed=seed)
-        self.pnummer_gen = PNummer(seed=seed)
+    def __init__(self) -> None:
+        super().__init__()
+        self.code_gen = Code()
+        self.internet_gen = Internet()
+        self.person_gen = Person("da")
+        self.pnummer_gen = PNummer()
 
     def generate(self, org_layers: List[List[OrganisationUnit]]) -> List[List[Address]]:
         def construct_addresses(org_unit: OrganisationUnit) -> List[Address]:

@@ -14,10 +14,10 @@ from .base import BaseGenerator
 
 
 class OrgTreeGenerator(BaseGenerator):
-    def __init__(self, seed: str = None) -> None:
-        super().__init__(seed)
-        self.address_gen = Address("da", seed=seed)
-        self.development_gen = Development(seed=seed)
+    def __init__(self) -> None:
+        super().__init__()
+        self.address_gen = Address("da")
+        self.development_gen = Development()
 
     def generate(self, size: int) -> OrgTree:
         return {
@@ -69,7 +69,8 @@ class OrgTreeGenerator(BaseGenerator):
         childcares = (generate_childcare() for _ in range(num_childcare))
         return dict(itertools.chain(schools, childcares))
 
-    def generate_cantina(self) -> OrgTree:
+    @staticmethod
+    def generate_cantina() -> OrgTree:
         if random.random() > 0.5:
             return {"Kantine": {}}
         return {}
