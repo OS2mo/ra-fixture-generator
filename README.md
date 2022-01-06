@@ -24,38 +24,36 @@ docker run --rm ra-fixture-generator --help
 ```
 Which yields:
 ```
-Usage: ra_fixture_generator [OPTIONS]
+Usage: python -m ra_fixture_generator [OPTIONS]
 
   Flatfile Fixture Generator.
 
   Used to generate flatfile fixture data (JSON) for OS2mo.
 
 Options:
-  --root-org-name TEXT  Name of the root organisation  [env var: ROOT_ORG_NAME; default: Magenta Aps]
-  --size INTEGER        Size of the generated dataset  [env var: FIXTURE_SIZE; default: 10]
-  --indent INTEGER      Pass 'indent' to json serializer
-  --mo-file FILENAME    Output OS2mo Flatfile  [required]
-  --help                Show this message and exit.
+  --root-org-name TEXT        Name of the root organisation.  [env var: ROOT_ORG_NAME; default: Magenta Aps]
+  -s, --size INTEGER          Size of the generated dataset. The number of generated employees roughly scales in 50n *
+                              log₂n.  [env var: FIXTURE_SIZE; default: 10]
+  -i, --indent INTEGER        Pass 'indent' to json serializer.
+  -o, --output-file FILENAME  Output OS2mo flatfile to FILENAME.k
+  --help                      Show this message and exit.
 ```
 At this point, the flat file can be generated with:
 ```
 docker run --rm -v $PWD:/srv/ ra-fixture-generator \
-    --name "Aarhus Kommune" --lora-file /srv/lora.json --mo-file /srv/mo.json
+    --root-org-name="Aarhus Kommune" \
+    --size=25 \
+    --output-file=mo.json
 ```
 At which point the file `mo.json` will be available in the current work-dir.
-This file can then be uploaded using the `ra-flatfile-importer`.
+This file can then be uploaded using [ra-flatfile-importer](https://git.magenta.dk/rammearkitektur/ra-flatfile-importer).
 
 For instance using:
 ```
 docker run -i --rm ra-flatfile-importer mo upload --mo-url http://MOURL:5000 < mo.json
 ```
 
-Alternatively the two can be combined:
-```
-docker run -i --rm ra-fixture-generator \
-   --name "Aarhus Kommune" --mo-file - | \
-docker run -i --rm ra-flatfile-importer mo upload --mo-url http://MOURL:5000
-```
+Alternatively the two can be combined using [os2mo-fixture-loader](https://git.magenta.dk/rammearkitektur/os2mo-fixture-loader).
 
 
 ## Versioning
