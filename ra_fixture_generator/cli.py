@@ -30,7 +30,10 @@ from .generator import generate_data
 )
 @click.option(
     "--size",
-    help="Size of the generated dataset",
+    help=(
+        "Size of the generated dataset."
+        "The number of generated employees roughly scales in 50n * log₂n."
+    ),
     type=click.INT,
     default=10,
     show_default=True,

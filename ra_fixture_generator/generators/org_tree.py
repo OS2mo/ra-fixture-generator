@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
+import itertools
 import random
 from typing import Tuple
 
@@ -39,7 +40,6 @@ class OrgTreeGenerator(BaseGenerator):
                     "Skoler og børnehaver": self.gen_schools_and_childcare(
                         num_schools=size * 6,
                         num_childcare=size * 4,
-                        num_technical_support=size // 10,
                     ),
                 },
                 "IT-Support": self.generate_cantina(),
@@ -48,31 +48,26 @@ class OrgTreeGenerator(BaseGenerator):
         }
 
     def gen_schools_and_childcare(
-        self,
-        num_schools: int,
-        num_childcare: int,
-        num_technical_support: int,
+        self, num_schools: int, num_childcare: int
     ) -> OrgTree:
         def generate_school() -> Tuple[str, OrgTree]:
-            name = self.address_gen.city() + " skole"
+            name = f"{self.address_gen.postal_code()} - {self.address_gen.city()} skole"
             school = {}
             if random.random() > 0.5:
                 school["Administration"] = {}
-            if random.random() > 0.5:
-                school["Teknisk Support"] = {
-                    f"Teknisk support for {self.development_gen.os()}": {}
-                    for _ in range(num_technical_support)
-                }
-            return name, {}
+            school["Teknisk Support"] = {
+                f"Teknisk support for {self.development_gen.os()}": {}
+                for _ in range(int(random.gammavariate(alpha=2, beta=1)))
+            }
+            return name, school
 
         def generate_childcare() -> Tuple[str, OrgTree]:
             name = self.address_gen.city() + " børnehave"
             return name, {}
 
-        ret = {}
-        ret.update(generate_school() for _ in range(num_schools))
-        ret.update(generate_childcare() for _ in range(num_childcare))
-        return ret
+        schools = (generate_school() for _ in range(num_schools))
+        childcares = (generate_childcare() for _ in range(num_childcare))
+        return dict(itertools.chain(schools, childcares))
 
     def generate_cantina(self) -> OrgTree:
         if random.random() > 0.5:

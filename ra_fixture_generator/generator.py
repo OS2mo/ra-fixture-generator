@@ -37,7 +37,7 @@ from .generators.org_unit import OrgUnitGenerator
 
 def generate_data(name: str, size: int) -> MOFlatFileFormat:
     random.seed(name)
-    employees_per_org = max(int(math.log2(size)), 3)
+    employees_per_org = max(2 * int(math.log2(size)), 3)
 
     organisation = Organisation.from_simplified_fields(
         uuid=generate_uuid(name, ""),

@@ -25,6 +25,9 @@ class EmployeeGenerator(BaseGenerator):
     ) -> List[Employee]:
         num_orgs = more_itertools.ilen(more_itertools.flatten(org_layers))
 
+        print("Number of organisation units:", num_orgs)
+        print("Number of employees:", num_orgs * employees_per_org)
+
         def generate_employee(_: int) -> Employee:
             def even(x: int) -> bool:
                 return (x % 2) == 0
