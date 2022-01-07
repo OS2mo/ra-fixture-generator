@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
-from typing import List
-from typing import Tuple
+from uuid import UUID
 
 import more_itertools
+from mimesis import Person
 from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
 from ramodels.mo.details import Engagement
@@ -15,45 +15,38 @@ from .base import BaseGenerator
 
 
 class EngagementGenerator(BaseGenerator):
+    def __init__(self) -> None:
+        super().__init__()
+        self.person_gen = Person("da")
+
     def generate(
         self,
-        employees: List[Employee],
-        org_layers: List[List[OrganisationUnit]],
-        job_functions: List[Tuple[str, str, str]],
-        engagement_types: List[Tuple[str, str, str]],
-        employees_per_org: int = 10,
-    ) -> List[List[Engagement]]:
+        employees: list[Employee],
+        employees_per_org: int,
+        org_layers: list[list[OrganisationUnit]],
+        job_functions: dict[str, UUID],
+        engagement_types: dict[str, UUID],
+    ) -> list[list[Engagement]]:
+        job_function_uuids = list(job_functions.values())
+        engagement_type_uuids = list(engagement_types.values())
+
         def construct_engagement(
             employee: Employee, org_unit: OrganisationUnit
         ) -> Engagement:
-            employee_uuid = employee.uuid
-            org_unit_uuid = org_unit.uuid
-
-            job_function = random.choice(job_functions)[0]
-            job_function_uuid = self.generate_uuid(job_function)
-
-            engagement_type = random.choice(engagement_types)[0]
-            engagement_type_uuid = self.generate_uuid(engagement_type)
-
-            uuid = self.generate_uuid(
-                str(employee_uuid) + str(org_unit_uuid) + str(job_function_uuid)
-            )
-
             return Engagement.from_simplified_fields(
-                uuid=uuid,
-                org_unit_uuid=org_unit_uuid,
-                person_uuid=employee_uuid,
-                job_function_uuid=job_function_uuid,
-                engagement_type_uuid=engagement_type_uuid,
+                org_unit_uuid=org_unit.uuid,
+                employee_uuid=employee.uuid,
+                job_function_uuid=random.choice(job_function_uuids),
+                engagement_type_uuid=random.choice(engagement_type_uuids),
                 from_date="1930-01-01",
                 to_date=None,
                 primary_uuid=self.generate_uuid("primary"),
-                user_key=str(uuid)[:8],
+                user_key=self.person_gen.identifier(mask="@@@@@@@@0###"),
             )
 
         employee_iter = iter(employees)
 
-        def construct_engagements(org_unit: OrganisationUnit) -> List[Engagement]:
+        def construct_engagements(org_unit: OrganisationUnit) -> list[Engagement]:
             org_employees = more_itertools.take(employees_per_org, employee_iter)
             assert len(org_employees) == employees_per_org
             return [

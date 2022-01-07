@@ -3,11 +3,23 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 from collections import Callable
-from typing import Dict
-from typing import Iterator
+from collections.abc import Iterator
+from typing import Any
+from typing import cast
 from typing import TypeVar
 
+import click
 from mimesis.builtins.base import BaseSpecProvider
+from pydantic import AnyHttpUrl
+from pydantic import parse_obj_as
+from pydantic import ValidationError
+
+
+def validate_url(ctx: click.Context, param: Any, value: Any) -> AnyHttpUrl:
+    try:
+        return cast(AnyHttpUrl, parse_obj_as(AnyHttpUrl, value))
+    except ValidationError as e:
+        raise click.BadParameter(str(e))
 
 
 class PNummer(BaseSpecProvider):
@@ -24,7 +36,7 @@ class PNummer(BaseSpecProvider):
 
 
 CallableReturnType = TypeVar("CallableReturnType")
-OrgTree = Dict[str, Dict]
+OrgTree = dict[str, dict]
 
 
 def tree_visitor(

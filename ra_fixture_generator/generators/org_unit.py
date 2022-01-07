@@ -4,8 +4,7 @@
 # --------------------------------------------------------------------------------------
 import itertools
 from operator import itemgetter
-from typing import List
-from typing import Tuple
+from uuid import UUID
 
 from ramodels.mo import OrganisationUnit
 
@@ -15,21 +14,27 @@ from .base import BaseGenerator
 
 
 class OrgUnitGenerator(BaseGenerator):
-    def generate(self, org_tree: OrgTree) -> List[List[OrganisationUnit]]:
+    def generate(
+        self,
+        org_tree: OrgTree,
+        org_unit_type_uuid: UUID,
+        org_unit_levels: dict[str, UUID],
+    ) -> list[list[OrganisationUnit]]:
+        levels = [
+            uuid
+            for user_key, uuid in sorted(org_unit_levels.items(), key=itemgetter(0))
+        ]
+
         def construct_org_unit(
             name: str, level: int, prefix: str
-        ) -> Tuple[int, OrganisationUnit]:
-            parent_uuid = None
-            if prefix:
-                parent_uuid = self.generate_uuid("org_unit" + prefix)
-
+        ) -> tuple[int, OrganisationUnit]:
             return level, OrganisationUnit.from_simplified_fields(
-                uuid=self.generate_uuid("org_unit" + prefix + name),
+                uuid=self.generate_uuid(prefix + name),
                 user_key=name,
                 name=name,
-                org_unit_type_uuid=self.generate_uuid("Afdeling"),
-                org_unit_level_uuid=self.generate_uuid("N" + str(level)),
-                parent_uuid=parent_uuid,
+                org_unit_type_uuid=org_unit_type_uuid,
+                org_unit_level_uuid=levels[level],
+                parent_uuid=self.generate_uuid(prefix) if prefix else None,
                 from_date="1930-01-01",
             )
 

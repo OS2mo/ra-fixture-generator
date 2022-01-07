@@ -1,0 +1,172 @@
+# SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
+# SPDX-License-Identifier: MPL-2.0
+---
+facets:
+  org_unit_address_type:
+    AddressMailUnit:
+      title: "Postadresse"
+      scope: "DAR"
+    AdressePostRetur:
+      title: "Returadresse"
+      scope: "DAR"
+    AdresseHenvendelsessted:
+      title: "Henvendelsessted"
+      scope: "DAR"
+    LocationUnit:
+      title: "Lokation"
+      scope: "TEXT"
+    Skolekode:
+      title: "Skolekode"
+      scope: "TEXT"
+    Formålskode:
+      title: "Formålskode"
+      scope: "TEXT"
+    Afdelingskode:
+      title: "Afdelingskode"
+      scope: "TEXT"
+    EmailUnit:
+      title: "Email"
+      scope: "EMAIL"
+    PhoneUnit:
+      title: "Telefon"
+      scope: "PHONE"
+    FaxUnit:
+      title: "Fax"
+      scope: "PHONE"
+    EAN:
+      title: "EAN-nummer"
+      scope: "EAN"
+    WebUnit:
+      title: "Webadresse"
+      scope: "WWW"
+    p-nummer:
+      title: "P-nummer"
+      scope: "PNUMBER"
+  employee_address_type:
+    AdressePostEmployee:
+      title: "Postadresse"
+      scope: "DAR"
+    PhoneEmployee:
+      title: "Telefon"
+      scope: "PHONE"
+    LocationEmployee:
+      title: "Lokation"
+      scope: "TEXT"
+    EmailEmployee:
+      title: "Email"
+      scope: "EMAIL"
+  manager_address_type:
+    EmailManager:
+      title: "Email"
+      scope: "EMAIL"
+    TelefonManager:
+      title: "Telefon"
+      scope: "PHONE"
+    AdressePostManager:
+      title: "Adresse"
+      scope: "DAR"
+    WebManager:
+      title: "Webadresse"
+      scope: "TEXT"
+  engagement_job_function:
+    - "Udvikler"
+    - "Specialkonsulent"
+    - "Ergoterapeut"
+    - "Udviklingskonsulent"
+    - "Specialist"
+    - "Jurist"
+    - "Personalekonsulent"
+    - "Lønkonsulent"
+    - "Kontorelev"
+    - "Ressourcepædagog"
+    - "Pædagoisk vejleder"
+    - "Skolepsykolog"
+    - "Støttepædagog"
+    - "Bogopsætter"
+    - "Timelønnet lærer"
+    - "Pædagogmedhjælper"
+    - "Teknisk Servicemedarb."
+    - "Lærer/Overlærer"
+  org_unit_type:
+    - "Afdeling"
+    - "Institutionsafsnit"
+    - "Institution"
+    - "Fagligt center"
+    - "Direktørområde"
+  engagement_type:
+    - "Ansat"
+    - "Ekstern konsulent"
+  association_type:
+    - "Formand"
+    - "Leder"
+    - "Medarbejder"
+    - "Næstformand"
+    - "Projektleder"
+    - "Projektgruppemedlem"
+    - "Teammedarbejder"
+  role_type:
+    - "Tillidsrepræsentant"
+    - "Ergonomiambasadør"
+    - "Ansvarlig for sommerfest"
+  leave_type:
+    - "Barselsorlov"
+    - "Forældreorlov"
+    - "Orlov til pasning af syg pårørende"
+  manager_type:
+    - "Direktør"
+    - "Distriktsleder"
+    - "Beredskabschef"
+    - "Sekretariatschef"
+    - "Systemadministrator"
+    - "Områdeleder"
+    - "Centerchef"
+    - "Institutionsleder"
+  responsibility:
+    - "Personale: ansættelse/afskedigelse"
+    - "Beredskabsledelse"
+    - "Personale: øvrige administrative opgaver"
+    - "Personale: Sygefravær"
+    - "Ansvar for bygninger og arealer"
+    - "Personale: MUS-kompetence"
+  manager_level:
+    - "Niveau 1"
+    - "Niveau 2"
+    - "Niveau 3"
+    - "Niveau 4"
+  visibility:
+    Intern:
+      title: "Må vises internt"
+      scope: "INTERNAL"
+    Public:
+      title: "Må vises eksternt"
+      scope: "PUBLIC"
+    Secret:
+      title: "Hemmelig"
+      scope: "SECRET"
+  time_planning:
+    - "Arbejdstidsplaner"
+    - "Dannes ikke"
+    - "Tjenestetid"
+  org_unit_level:
+    - "N1"
+    - "N2"
+    - "N3"
+    - "N4"
+    - "N5"
+    - "N6"
+    - "N7"
+    - "N8"
+  primary_type:
+    primary:
+      title: "Primær"
+      scope: "3000"
+    non-primary:
+      title: "Ikke-primær ansættelse"
+      scope: "0"
+    explicitly-primary:
+      title: "Manuelt primær ansættelse"
+      scope: "5000"
+
+it_systems:
+  OpenLDAP: "LDAP"
+  Nextcloud: "Nextcloud"

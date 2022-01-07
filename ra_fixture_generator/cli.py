@@ -5,8 +5,11 @@
 from typing import TextIO
 
 import click
+from pydantic import AnyHttpUrl
 
 from .generator import generate_data
+from .reader import get_classes
+from .util import validate_url
 
 
 @click.command(
@@ -28,23 +31,80 @@ from .generator import generate_data
     show_envvar=True,
 )
 @click.option(
-    "-i",
-    "--indent",
-    help="Pass 'indent' to json serializer.",
-    type=click.INT,
-    default=None,
+    "--mo-url",
+    help="OS2mo URL.",
+    required=True,
+    callback=validate_url,
+    envvar="MO_URL",
+    show_envvar=True,
+)
+@click.option(
+    "--client-id",
+    help="Client ID used to authenticate against OS2mo.",
+    required=True,
+    default="dipex",
+    show_default=True,
+    envvar="CLIENT_ID",
+    show_envvar=True,
+)
+@click.option(
+    "--client-secret",
+    help="Client secret used to authenticate against OS2mo.",
+    required=True,
+    envvar="CLIENT_SECRET",
+    show_envvar=True,
+)
+@click.option(
+    "--auth-server",
+    help="Keycloak authentication server.",
+    required=True,
+    callback=validate_url,
+    envvar="AUTH_SERVER",
+    show_envvar=True,
+)
+@click.option(
+    "--auth-realm",
+    help="Keycloak realm for OS2mo authentication.",
+    default="mo",
+    show_default=True,
+    envvar="AUTH_REALM",
+    show_envvar=True,
 )
 @click.option(
     "-o",
     "--output-file",
     help="Output OS2mo flatfile to FILENAME.",
     type=click.File("w"),
-    default="-",
+    default="mo.json",
+    show_default=True,
 )
-def generate(size: int, indent: int, output_file: TextIO) -> None:
+@click.option(
+    "-i",
+    "--indent",
+    help="Pass 'indent' to json serializer.",
+    type=click.INT,
+    default=None,
+)
+def generate(
+    size: int,
+    mo_url: AnyHttpUrl,
+    client_id: str,
+    client_secret: str,
+    auth_server: AnyHttpUrl,
+    auth_realm: str,
+    output_file: TextIO,
+    indent: int,
+) -> None:
     """Flatfile Fixture Generator.
 
     Used to generate flatfile fixture data (JSON) for OS2mo.
     """
-    mo_flatfile = generate_data(root_org_name, size)
+    classes = get_classes(
+        mo_url=mo_url,
+        client_id=client_id,
+        client_secret=client_secret,
+        auth_server=auth_server,
+        auth_realm=auth_realm,
+    )
+    mo_flatfile = generate_data(size=size, classes=classes)
     output_file.write(mo_flatfile.json(indent=indent))

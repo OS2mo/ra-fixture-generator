@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
-from typing import List
 
 import more_itertools
 from mimesis import Code
@@ -13,8 +12,8 @@ from mimesis.enums import EANFormat
 from ramodels.mo import OrganisationUnit
 from ramodels.mo.details import Address
 
-from .base import BaseGenerator
 from ..util import PNummer
+from .base import BaseGenerator
 
 
 class OrgAddressGenerator(BaseGenerator):
@@ -25,8 +24,8 @@ class OrgAddressGenerator(BaseGenerator):
         self.person_gen = Person("da")
         self.pnummer_gen = PNummer()
 
-    def generate(self, org_layers: List[List[OrganisationUnit]]) -> List[List[Address]]:
-        def construct_addresses(org_unit: OrganisationUnit) -> List[Address]:
+    def generate(self, org_layers: list[list[OrganisationUnit]]) -> list[list[Address]]:
+        def construct_addresses(org_unit: OrganisationUnit) -> list[Address]:
             org_unit_uuid = org_unit.uuid
 
             addresses = [
@@ -54,7 +53,6 @@ class OrgAddressGenerator(BaseGenerator):
 
             return [
                 Address.from_simplified_fields(
-                    uuid=self.generate_uuid(str(org_unit_uuid) + str(value)),
                     value=str(value),
                     value2=None,
                     address_type_uuid=address_type_uuid,

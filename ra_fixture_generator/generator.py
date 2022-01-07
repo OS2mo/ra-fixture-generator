@@ -6,7 +6,7 @@
 import math
 from itertools import zip_longest
 from operator import add
-from typing import List
+from uuid import UUID
 
 from more_itertools import prepend
 from ra_flatfile_importer.mo.models import MOFlatFileFormat
@@ -29,8 +29,7 @@ from .generators.org_tree import OrgTreeGenerator
 from .generators.org_unit import OrgUnitGenerator
 
 
-def generate_data(name: str, size: int) -> MOFlatFileFormat:
-    random.seed(name)
+def generate_data(size: int, classes: dict[str, dict[str, UUID]]) -> MOFlatFileFormat:
     employees_per_org = max(2 * int(math.log2(size)), 3)
 
     org_tree = OrgTreeGenerator().generate(
@@ -38,6 +37,8 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
     )
     org_layers = OrgUnitGenerator().generate(
         org_tree=org_tree,
+        org_unit_type_uuid=classes["org_unit_type"][min(classes["org_unit_type"])],
+        org_unit_levels=classes["org_unit_level"],
     )
     org_address_layers = OrgAddressGenerator().generate(
         org_layers=org_layers,
@@ -49,27 +50,28 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
     )
     employee_addresses = EmployeeAddressGenerator().generate(
         employees=employees,
+        employee_address_types=classes["employee_address_type"],
     )
     engagement_layers = EngagementGenerator().generate(
         employees=employees,
         org_layers=org_layers,
-        job_functions=default_classes["engagement_job_function"],
-        engagement_types=default_classes["engagement_type"],
         employees_per_org=employees_per_org,
+        job_functions=classes["engagement_job_function"],
+        engagement_types=classes["engagement_type"],
     )
     manager_layers = ManagerGenerator().generate(
         org_layers=org_layers,
         employees=employees,
-        responsibilities=default_classes["responsibility"],
-        manager_levels=default_classes["manager_level"],
-        manager_types=default_classes["manager_type"],
         employees_per_org=employees_per_org,
+        responsibilities=classes["responsibility"],
+        manager_levels=classes["manager_level"],
+        manager_types=classes["manager_type"],
     )
     association_layers = AssociationGenerator().generate(
         org_layers=org_layers,
         employees=employees,
-        association_types=default_classes["association_type"],
         employees_per_org=employees_per_org,
+        association_types=classes["association_type"],
     )
 
     # All employee addresses can be merged into the first layer of org-addresses,
@@ -82,12 +84,12 @@ def generate_data(name: str, size: int) -> MOFlatFileFormat:
     )
 
     def construct_chunk(
-        org_layer: List[OrganisationUnit],
-        employee_layer: List[Employee],
-        address_layer: List[Address],
-        engagement_layer: List[Engagement],
-        manager_layer: List[Manager],
-        association_layer: List[Association],
+        org_layer: list[OrganisationUnit],
+        employee_layer: list[Employee],
+        address_layer: list[Address],
+        engagement_layer: list[Engagement],
+        manager_layer: list[Manager],
+        association_layer: list[Association],
     ) -> MOFlatFileFormatChunk:
         return MOFlatFileFormatChunk(
             org_units=org_layer,

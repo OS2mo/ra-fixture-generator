@@ -10,4 +10,4 @@ class BaseGenerator:
         self.generate_uuid = uuid_generator(base=self.__class__.__name__)
 
     def generate(self, *args, **kwargs):
-        pass
+        raise NotImplementedError()

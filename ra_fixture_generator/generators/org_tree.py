@@ -4,7 +4,6 @@
 # --------------------------------------------------------------------------------------
 import itertools
 import random
-from typing import Tuple
 
 from mimesis import Address
 from mimesis import Development
@@ -50,7 +49,7 @@ class OrgTreeGenerator(BaseGenerator):
     def gen_schools_and_childcare(
         self, num_schools: int, num_childcare: int
     ) -> OrgTree:
-        def generate_school() -> Tuple[str, OrgTree]:
+        def generate_school() -> tuple[str, OrgTree]:
             name = f"{self.address_gen.postal_code()} - {self.address_gen.city()} skole"
             school = {}
             if random.random() > 0.5:
@@ -61,7 +60,7 @@ class OrgTreeGenerator(BaseGenerator):
             }
             return name, school
 
-        def generate_childcare() -> Tuple[str, OrgTree]:
+        def generate_childcare() -> tuple[str, OrgTree]:
             name = self.address_gen.city() + " børnehave"
             return name, {}
 
