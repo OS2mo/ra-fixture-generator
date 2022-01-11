@@ -9,6 +9,8 @@ from pydantic import AnyHttpUrl
 
 from .generator import generate_data
 from .reader import get_classes
+from .reader import get_clients
+from .reader import get_it_systems
 from .util import validate_url
 
 
@@ -99,12 +101,14 @@ def generate(
 
     Used to generate flatfile fixture data (JSON) for OS2mo.
     """
-    classes = get_classes(
+    client, graphql_client = get_clients(
         mo_url=mo_url,
         client_id=client_id,
         client_secret=client_secret,
         auth_server=auth_server,
         auth_realm=auth_realm,
     )
-    mo_flatfile = generate_data(size=size, classes=classes)
+    classes = get_classes(graphql_client)
+    it_systems = get_it_systems(client, graphql_client)
+    mo_flatfile = generate_data(size=size, classes=classes, it_systems=it_systems)
     output_file.write(mo_flatfile.json(indent=indent))
