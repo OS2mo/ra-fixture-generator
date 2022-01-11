@@ -1,6 +1,11 @@
 # SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 ---
+root_organisation:
+  name: "Aarhus"
+  user_key: "root"
+  municipality_code: null
+
 facets:
   org_unit_address_type:
     AddressMailUnit:
@@ -69,70 +74,182 @@ facets:
       title: "Webadresse"
       scope: "TEXT"
   engagement_job_function:
-    - "Udvikler"
-    - "Specialkonsulent"
-    - "Ergoterapeut"
-    - "Udviklingskonsulent"
-    - "Specialist"
-    - "Jurist"
-    - "Personalekonsulent"
-    - "Lønkonsulent"
-    - "Kontorelev"
-    - "Ressourcepædagog"
-    - "Pædagoisk vejleder"
-    - "Skolepsykolog"
-    - "Støttepædagog"
-    - "Bogopsætter"
-    - "Timelønnet lærer"
-    - "Pædagogmedhjælper"
-    - "Teknisk Servicemedarb."
-    - "Lærer/Overlærer"
+    Udvikler:
+      title: "Udvikler"
+      scope: "TEXT"
+    Specialconsultant:
+      title: "Specialkonsulent"
+      scope: "TEXT"
+    Ergoterapeut:
+      title: "Ergoterapeut"
+      scope: "TEXT"
+    Udviklingskonsulent:
+      title: "Udviklingskonsulent"
+      scope: "TEXT"
+    Specialist:
+      title: "Specialist"
+      scope: "TEXT"
+    Jurist:
+      title: "Jurist"
+      scope: "TEXT"
+    Personalekonsulent:
+      title: "Personalekonsulent"
+      scope: "TEXT"
+    Lønkonsulent:
+      title: "Lønkonsulent"
+      scope: "TEXT"
+    Kontorelev:
+      title: "Kontorelev"
+      scope: "TEXT"
+    Ressourcepædagog:
+      title: "Ressourcepædagog"
+      scope: "TEXT"
+    Pædagoisk vejleder:
+      title: "Pædagoisk vejleder"
+      scope: "TEXT"
+    Skolepsykolog:
+      title: "Skolepsykolog"
+      scope: "TEXT"
+    Støttepædagog:
+      title: "Støttepædagog"
+      scope: "TEXT"
+    Bogopsætter:
+      title: "Bogopsætter"
+      scope: "TEXT"
+    Timelønnet lærer:
+      title: "Timelønnet lærer"
+      scope: "TEXT"
+    Pædagogmedhjælper:
+      title: "Pædagogmedhjælper"
+      scope: "TEXT"
+    Teknisk Servicemedarb.:
+      title: "Teknisk Servicemedarb."
+      scope: "TEXT"
+    Lærer/Overlærer:
+      title: "Lærer/Overlærer"
+      scope: "TEXT"
   org_unit_type:
-    - "Afdeling"
-    - "Institutionsafsnit"
-    - "Institution"
-    - "Fagligt center"
-    - "Direktørområde"
+    Afdeling:
+      title: "Afdeling"
+      scope: "TEXT"
+    Institutionsafsnit:
+      title: "Institutionsafsnit"
+      scope: "TEXT"
+    Institution:
+      title: "Institution"
+      scope: "TEXT"
+    Fagligt center:
+      title: "Fagligt center"
+      scope: "TEXT"
+    Direktørområde:
+      title: "Direktørområde"
+      scope: "TEXT"
   engagement_type:
-    - "Ansat"
-    - "Ekstern konsulent"
+    Ansat:
+      title: "Ansat"
+      scope: "TEXT"
+    Ekstern konsulent:
+      title: "Ekstern konsulent"
+      scope: "TEXT"
   association_type:
-    - "Formand"
-    - "Leder"
-    - "Medarbejder"
-    - "Næstformand"
-    - "Projektleder"
-    - "Projektgruppemedlem"
-    - "Teammedarbejder"
+    Formand:
+      title: "Formand"
+      scope: "TEXT"
+    Leder:
+      title: "Leder"
+      scope: "TEXT"
+    Medarbejder:
+      title: "Medarbejder"
+      scope: "TEXT"
+    Næstformand:
+      title: "Næstformand"
+      scope: "TEXT"
+    Projektleder:
+      title: "Projektleder"
+      scope: "TEXT"
+    Projektgruppemedlem:
+      title: "Projektgruppemedlem"
+      scope: "TEXT"
+    Teammedarbejder:
+      title: "Teammedarbejder"
+      scope: "TEXT"
   role_type:
-    - "Tillidsrepræsentant"
-    - "Ergonomiambasadør"
-    - "Ansvarlig for sommerfest"
+    Tillidsrepræsentant:
+      title: "Tillidsrepræsentant"
+      scope: "TEXT"
+    Ergonomiambasadør:
+      title: "Ergonomiambasadør"
+      scope: "TEXT"
+    Ansvarlig for sommerfest:
+      title: "Ansvarlig for sommerfest"
+      scope: "TEXT"
   leave_type:
-    - "Barselsorlov"
-    - "Forældreorlov"
-    - "Orlov til pasning af syg pårørende"
+    Barselsorlov:
+      title: "Barselsorlov"
+      scope: "TEXT"
+    Forældreorlov:
+      title: "Forældreorlov"
+      scope: "TEXT"
+    Orlov til pasning af syg pårørende:
+      title: "Orlov til pasning af syg pårørende"
+      scope: "TEXT"
   manager_type:
-    - "Direktør"
-    - "Distriktsleder"
-    - "Beredskabschef"
-    - "Sekretariatschef"
-    - "Systemadministrator"
-    - "Områdeleder"
-    - "Centerchef"
-    - "Institutionsleder"
+    Direktør:
+      title: "Direktør"
+      scope: "TEXT"
+    Distriktsleder:
+      title: "Distriktsleder"
+      scope: "TEXT"
+    Beredskabschef:
+      title: "Beredskabschef"
+      scope: "TEXT"
+    Sekretariatschef:
+      title: "Sekretariatschef"
+      scope: "TEXT"
+    Systemadministrator:
+      title: "Systemadministrator"
+      scope: "TEXT"
+    Områdeleder:
+      title: "Områdeleder"
+      scope: "TEXT"
+    Centerchef:
+      title: "Centerchef"
+      scope: "TEXT"
+    Institutionsleder:
+      title: "Institutionsleder"
+      scope: "TEXT"
   responsibility:
-    - "Personale: ansættelse/afskedigelse"
-    - "Beredskabsledelse"
-    - "Personale: øvrige administrative opgaver"
-    - "Personale: Sygefravær"
-    - "Ansvar for bygninger og arealer"
-    - "Personale: MUS-kompetence"
+    PersonaleAnsættelseAfskedigelse:
+      title: "Personale: ansættelse/afskedigelse"
+      scope: "TEXT"
+    Beredskabsledelse:
+      title: "Beredskabsledelse"
+      scope: "TEXT"
+    PersonaleØvrigeAdministrativeOpgaver:
+      title: "Personale: øvrige administrative opgaver"
+      scope: "TEXT"
+    PersonaleSygefravær:
+      title: "Personale: Sygefravær"
+      scope: "TEXT"
+    AnsvarForBygningerOgArealer:
+      title: "Ansvar for bygninger og arealer"
+      scope: "TEXT"
+    PersonaleMUSKompetence:
+      title: "Personale: MUS-kompetence"
+      scope: "TEXT"
   manager_level:
-    - "Niveau 1"
-    - "Niveau 2"
-    - "Niveau 3"
-    - "Niveau 4"
+    N1:
+      title: "Niveau 1"
+      scope: "TEXT"
+    N2:
+      title: "Niveau 2"
+      scope: "TEXT"
+    N3:
+      title: "Niveau 3"
+      scope: "TEXT"
+    N4:
+      title: "Niveau 4"
+      scope: "TEXT"
   visibility:
     Intern:
       title: "Må vises internt"
@@ -144,18 +261,40 @@ facets:
       title: "Hemmelig"
       scope: "SECRET"
   time_planning:
-    - "Arbejdstidsplaner"
-    - "Dannes ikke"
-    - "Tjenestetid"
+    Arbejdstidsplaner:
+      title: "Arbejdstidsplaner"
+      scope: "TEXT"
+    DannesIkke:
+      title: "Dannes ikke"
+      scope: "TEXT"
+    Tjenestetid:
+      title: "Tjenestetid"
+      scope: "TEXT"
   org_unit_level:
-    - "N1"
-    - "N2"
-    - "N3"
-    - "N4"
-    - "N5"
-    - "N6"
-    - "N7"
-    - "N8"
+    N1:
+      title: "N1"
+      scope: "TEXT"
+    N2:
+      title: "N2"
+      scope: "TEXT"
+    N3:
+      title: "N3"
+      scope: "TEXT"
+    N4:
+      title: "N4"
+      scope: "TEXT"
+    N5:
+      title: "N5"
+      scope: "TEXT"
+    N6:
+      title: "N6"
+      scope: "TEXT"
+    N7:
+      title: "N7"
+      scope: "TEXT"
+    N8:
+      title: "N8"
+      scope: "TEXT"
   primary_type:
     primary:
       title: "Primær"
@@ -169,4 +308,4 @@ facets:
 
 it_systems:
   OpenLDAP: "LDAP"
-  Nextcloud: "Nextcloud"
+  Nextcloud: "NextCloud"
