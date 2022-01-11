@@ -21,20 +21,18 @@ class EmployeeAddressGenerator(BaseGenerator):
     def generate(
         self, employees: list[Employee], employee_address_types: dict[str, UUID]
     ) -> list[Address]:
+        email_uuid = employee_address_types["EmailEmployee"]
+        phone_uuid = employee_address_types["PhoneEmployee"]
+        location_uuid = employee_address_types["LocationEmployee"]
+
         def construct_addresses(employee: Employee) -> list[Address]:
             addresses = [
                 # TODO: dar_uuid needs to be valid, fetch from DAR?
                 # (generate_uuid("fake-dar-1" + str(employee_uuid)),
                 #  generate_uuid("AdressePostEmployee")),
-                (self.person_gen.email(), employee_address_types["EmailEmployee"]),
-                (
-                    self.person_gen.telephone("########"),
-                    employee_address_types["PhoneEmployee"],
-                ),
-                (
-                    "Bygning {}".format(random.randrange(1, 20)),
-                    employee_address_types["LocationEmployee"],
-                ),
+                (self.person_gen.email(), email_uuid),
+                (self.person_gen.telephone("########"), phone_uuid),
+                ("Bygning {}".format(random.randrange(1, 20)), location_uuid),
             ]
 
             return [
