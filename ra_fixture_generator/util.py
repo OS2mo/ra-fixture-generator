@@ -2,13 +2,15 @@
 # SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
-from collections import Callable
+from collections.abc import Callable
 from collections.abc import Iterator
 from typing import Any
 from typing import cast
 from typing import TypeVar
+from unittest.mock import patch
 
 import click
+from mimesis.builtins import DenmarkSpecProvider
 from mimesis.builtins.base import BaseSpecProvider
 from pydantic import AnyHttpUrl
 from pydantic import parse_obj_as
@@ -20,6 +22,23 @@ def validate_url(ctx: click.Context, param: Any, value: Any) -> AnyHttpUrl:
         return cast(AnyHttpUrl, parse_obj_as(AnyHttpUrl, value))
     except ValidationError as e:
         raise click.BadParameter(str(e))
+
+
+class FixedDenmarkSpecProvider(DenmarkSpecProvider):
+    """
+    Mimesis DenmarkSpecProvider, but actually allowing you to specify the randomisation
+    parameters instead of just hard-coding it (actually wtf?). Hideous implementation,
+    but that's what you get for working with hideous libraries.
+    """
+
+    def cpr(self, start=1858, end=2021) -> str:
+        orig_date = self._datetime.date
+
+        def patched_date(*args, **kwargs):
+            return orig_date(start=start, end=end)
+
+        with patch.object(self._datetime, "date", patched_date):
+            return super().cpr()
 
 
 class PNummer(BaseSpecProvider):

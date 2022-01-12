@@ -4,19 +4,19 @@
 # --------------------------------------------------------------------------------------
 import more_itertools
 from mimesis import Person
-from mimesis.builtins import DenmarkSpecProvider
 from mimesis.enums import Gender
 from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
 
 from .base import BaseGenerator
+from ..util import FixedDenmarkSpecProvider
 
 
 class EmployeeGenerator(BaseGenerator):
     def __init__(self) -> None:
         super().__init__()
         self.person_gen = Person("da")
-        self.danish_gen = DenmarkSpecProvider()
+        self.danish_gen = FixedDenmarkSpecProvider()
 
     def generate(
         self, org_layers: list[list[OrganisationUnit]], employees_per_org: int
@@ -30,7 +30,7 @@ class EmployeeGenerator(BaseGenerator):
             def even(x: int) -> bool:
                 return (x % 2) == 0
 
-            cpr = self.danish_gen.cpr()
+            cpr = self.danish_gen.cpr(start=1937, end=1999)
             gender = Gender.MALE if even(int(cpr[-1])) else Gender.FEMALE
 
             return Employee(
