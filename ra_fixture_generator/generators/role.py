@@ -9,8 +9,8 @@ import more_itertools
 from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
 from ramodels.mo import Validity
-from ramodels.mo._shared import EmployeeRef
 from ramodels.mo._shared import OrgUnitRef
+from ramodels.mo._shared import PersonRef
 from ramodels.mo._shared import RoleType
 from ramodels.mo.details import Role
 
@@ -35,7 +35,7 @@ class RoleGenerator(BaseGenerator):
             employee = random.choice(org_employees)
             return Role(
                 role_type=RoleType(uuid=random.choice(role_type_uuids)),
-                employee=EmployeeRef(uuid=employee.uuid),
+                person=PersonRef(uuid=employee.uuid),
                 org_unit=OrgUnitRef(uuid=org_unit.uuid),
                 validity=Validity(
                     from_date="1930-01-01",

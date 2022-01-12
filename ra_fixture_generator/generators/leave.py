@@ -23,7 +23,7 @@ class LeaveGenerator(BaseGenerator):
         def construct_leave(engagement: Engagement) -> Leave:
             return Leave(
                 leave_type=LeaveType(uuid=random.choice(leave_type_uuids)),
-                employee=engagement.employee,
+                person=engagement.person,
                 engagement=EngagementRef(uuid=engagement.uuid),
                 validity=Validity(
                     from_date="1930-01-01",

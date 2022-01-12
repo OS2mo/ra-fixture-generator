@@ -35,7 +35,7 @@ class ManagerGenerator(BaseGenerator):
             employee = random.choice(org_employees)
             return Manager.from_simplified_fields(
                 org_unit_uuid=org_unit.uuid,
-                employee_uuid=employee.uuid,
+                person_uuid=employee.uuid,
                 responsibility_uuids=[random.choice(responsibility_uuids)],
                 manager_level_uuid=random.choice(manager_level_uuids),
                 manager_type_uuid=random.choice(manager_type_uuids),

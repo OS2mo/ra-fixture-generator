@@ -35,7 +35,7 @@ class EngagementGenerator(BaseGenerator):
         ) -> Engagement:
             return Engagement.from_simplified_fields(
                 org_unit_uuid=org_unit.uuid,
-                employee_uuid=employee.uuid,
+                person_uuid=employee.uuid,
                 job_function_uuid=random.choice(job_function_uuids),
                 engagement_type_uuid=random.choice(engagement_type_uuids),
                 from_date="1930-01-01",

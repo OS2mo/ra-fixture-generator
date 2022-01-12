@@ -27,7 +27,7 @@ class AssociationGenerator(BaseGenerator):
             employee = random.choice(employees)
             return Association.from_simplified_fields(
                 org_unit_uuid=org_unit.uuid,
-                employee_uuid=employee.uuid,
+                person_uuid=employee.uuid,
                 association_type_uuid=random.choice(association_type_uuids),
                 from_date="1930-01-01",
                 to_date=None,

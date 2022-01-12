@@ -28,7 +28,7 @@ class ITUserGenerator(BaseGenerator):
                 ITUser.from_simplified_fields(
                     user_key=self.person_gen.username(mask="ld"),
                     itsystem_uuid=it_system_uuid,
-                    employee_uuid=employee.uuid,
+                    person_uuid=employee.uuid,
                     from_date="1930-01-01",
                     to_date=None,
                 )

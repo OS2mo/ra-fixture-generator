@@ -41,7 +41,7 @@ class EmployeeAddressGenerator(BaseGenerator):
                     value2=None,
                     address_type_uuid=address_type_uuid,
                     from_date="1930-01-01",  # todo: ensure this isn't before the associated org_unit or person
-                    employee_uuid=employee.uuid,
+                    person_uuid=employee.uuid,
                 )
                 for value, address_type_uuid in addresses
             ]
