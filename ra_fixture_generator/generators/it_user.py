@@ -32,7 +32,7 @@ class ITUserGenerator(BaseGenerator):
                     person_uuid=employee.uuid,
                     **self.random_validity(EmployeeValidity).dict(),
                 )
-                for it_system_uuid in it_systems_uuids
+                for it_system_uuid in it_systems_uuids * 2
                 if random.random() < 0.6
             ]
 

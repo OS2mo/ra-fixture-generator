@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
+from functools import partial
 from uuid import UUID
 
 import more_itertools
@@ -19,32 +20,38 @@ class EmployeeAddressGenerator(BaseGenerator):
         super().__init__()
         self.person_gen = Person("da")
 
+    @staticmethod
+    def gen_building() -> str:
+        return "Bygning {}".format(random.randrange(1, 20))
+
     def generate(
         self, employees: list[Employee], employee_address_types: dict[str, UUID]
     ) -> list[Address]:
-        email_uuid = employee_address_types["EmailEmployee"]
-        phone_uuid = employee_address_types["PhoneEmployee"]
-        location_uuid = employee_address_types["LocationEmployee"]
+        generators = [
+            # TODO: dar_uuid needs to be valid, fetch from DAR?
+            # (generate_uuid("fake-dar-1" + str(employee_uuid)),
+            #  generate_uuid("AdressePostEmployee")),
+            (self.person_gen.email, employee_address_types["EmailEmployee"]),
+            (
+                partial(self.person_gen.telephone, "########"),
+                employee_address_types["PhoneEmployee"],
+            ),
+            (self.gen_building, employee_address_types["LocationEmployee"]),
+        ]
 
         def construct_addresses(employee: Employee) -> list[Address]:
-            addresses = [
-                # TODO: dar_uuid needs to be valid, fetch from DAR?
-                # (generate_uuid("fake-dar-1" + str(employee_uuid)),
-                #  generate_uuid("AdressePostEmployee")),
-                (self.person_gen.email(), email_uuid),
-                (self.person_gen.telephone("########"), phone_uuid),
-                ("Bygning {}".format(random.randrange(1, 20)), location_uuid),
-            ]
 
             return [
                 Address.from_simplified_fields(
-                    value=str(value),
+                    value=str(generator()),
                     value2=None,
                     address_type_uuid=address_type_uuid,
                     person_uuid=employee.uuid,
                     **self.random_validity(EmployeeValidity).dict(),
                 )
-                for value, address_type_uuid in addresses
+                for generator, address_type_uuid in random.choices(
+                    generators, k=int(random.gammavariate(alpha=5, beta=0.6))
+                )
             ]
 
         return list(more_itertools.flatten(map(construct_addresses, employees)))

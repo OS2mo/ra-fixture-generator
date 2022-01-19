@@ -34,7 +34,10 @@ class AssociationGenerator(BaseGenerator):
             )
 
         def construct_associations(org_unit: OrganisationUnit) -> list[Association]:
-            return [construct_association(org_unit) for _ in range(employees_per_org)]
+            return [
+                construct_association(org_unit)
+                for _ in range(random.randint(0, employees_per_org))
+            ]
 
         return [
             list(more_itertools.flatten(map(construct_associations, layer)))

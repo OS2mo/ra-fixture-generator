@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
+from typing import Optional
 from uuid import UUID
 
 from ramodels.mo._shared import EngagementRef
@@ -19,7 +20,9 @@ class LeaveGenerator(BaseGenerator):
     ) -> list[list[Leave]]:
         leave_type_uuids = list(leave_types.values())
 
-        def construct_leave(engagement: Engagement) -> Leave:
+        def construct_leave(engagement: Engagement) -> Optional[Leave]:
+            if random.random() > 0.4:
+                return None
             return Leave(
                 leave_type=LeaveType(uuid=random.choice(leave_type_uuids)),
                 person=engagement.person,
@@ -27,4 +30,7 @@ class LeaveGenerator(BaseGenerator):
                 validity=self.random_validity(engagement.validity),
             )
 
-        return [list(map(construct_leave, layer)) for layer in engagement_layers]
+        return [
+            list(filter(None, map(construct_leave, layer)))
+            for layer in engagement_layers
+        ]
