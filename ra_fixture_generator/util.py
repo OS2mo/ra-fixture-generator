@@ -2,8 +2,11 @@
 # SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
+import zoneinfo
 from collections.abc import Callable
 from collections.abc import Iterator
+from datetime import datetime
+from datetime import timedelta
 from typing import Any
 from typing import cast
 from typing import TypeVar
@@ -15,6 +18,9 @@ from mimesis.builtins.base import BaseSpecProvider
 from pydantic import AnyHttpUrl
 from pydantic import parse_obj_as
 from pydantic import ValidationError
+from ramodels.mo import Validity
+
+DEFAULT_TZ = zoneinfo.ZoneInfo("Europe/Copenhagen")
 
 
 def validate_url(ctx: click.Context, param: Any, value: Any) -> AnyHttpUrl:
@@ -56,6 +62,15 @@ class PNummer(BaseSpecProvider):
 
 CallableReturnType = TypeVar("CallableReturnType")
 OrgTree = dict[str, dict]
+
+
+EmployeeValidity = Validity(
+    # Bounding when any employee will be valid from. This is used to generate employees,
+    # and subsequently to generate associated objects without having to parse the CPR
+    # back to a date.
+    from_date=datetime.now(tz=DEFAULT_TZ) - timedelta(days=365 * 30),
+    to_date=None,
+)
 
 
 def tree_visitor(

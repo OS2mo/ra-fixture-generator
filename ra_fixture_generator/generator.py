@@ -53,6 +53,7 @@ def generate_data(
     )
     org_address_layers = OrgAddressGenerator().generate(
         org_layers=org_layers,
+        org_unit_address_types=classes["org_unit_address_type"],
     )
 
     employees = EmployeeGenerator().generate(
@@ -69,6 +70,7 @@ def generate_data(
         employees_per_org=employees_per_org,
         job_functions=classes["engagement_job_function"],
         engagement_types=classes["engagement_type"],
+        primary_types=classes["primary_type"],
     )
     manager_layers = ManagerGenerator().generate(
         org_layers=org_layers,

@@ -11,6 +11,7 @@ from ramodels.mo import Employee
 from ramodels.mo.details import ITUser
 
 from .base import BaseGenerator
+from ..util import EmployeeValidity
 
 
 class ITUserGenerator(BaseGenerator):
@@ -29,13 +30,10 @@ class ITUserGenerator(BaseGenerator):
                     user_key=self.person_gen.username(mask="ld"),
                     itsystem_uuid=it_system_uuid,
                     person_uuid=employee.uuid,
-                    from_date="1930-01-01",
-                    to_date=None,
+                    **self.random_validity(EmployeeValidity).dict(),
                 )
-                for it_system_uuid in random.sample(
-                    it_systems_uuids,
-                    k=random.randint(0, len(it_systems_uuids)),
-                )
+                for it_system_uuid in it_systems_uuids
+                if random.random() < 0.6
             ]
 
         return list(more_itertools.flatten(map(construct_it_users, employees)))

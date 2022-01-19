@@ -2,6 +2,8 @@
 # SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
+from datetime import date
+
 import more_itertools
 from mimesis import Person
 from mimesis.enums import Gender
@@ -9,6 +11,7 @@ from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
 
 from .base import BaseGenerator
+from ..util import EmployeeValidity
 from ..util import FixedDenmarkSpecProvider
 
 
@@ -30,7 +33,12 @@ class EmployeeGenerator(BaseGenerator):
             def even(x: int) -> bool:
                 return (x % 2) == 0
 
-            cpr = self.danish_gen.cpr(start=1937, end=1999)
+            # Everyone's born between 60 and 30 years ago, so we can generate objects
+            # associated with any employee without having to parse CPR back to a date.
+            cpr = self.danish_gen.cpr(
+                start=date.today().year - 60,
+                end=EmployeeValidity.from_date.year - 1,
+            )
             gender = Gender.MALE if even(int(cpr[-1])) else Gender.FEMALE
 
             return Employee(

@@ -11,6 +11,7 @@ from ramodels.mo import OrganisationUnit
 from ramodels.mo.details import Manager
 
 from .base import BaseGenerator
+from ..util import EmployeeValidity
 
 
 class ManagerGenerator(BaseGenerator):
@@ -39,7 +40,7 @@ class ManagerGenerator(BaseGenerator):
                 responsibility_uuids=[random.choice(responsibility_uuids)],
                 manager_level_uuid=random.choice(manager_level_uuids),
                 manager_type_uuid=random.choice(manager_type_uuids),
-                from_date="1930-01-01",
+                **self.random_validity(org_unit.validity, EmployeeValidity).dict(),
             )
 
         return_value = list(list(map(construct_manager, layer)) for layer in org_layers)

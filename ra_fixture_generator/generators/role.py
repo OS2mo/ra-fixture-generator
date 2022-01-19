@@ -8,13 +8,13 @@ from uuid import UUID
 import more_itertools
 from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
-from ramodels.mo import Validity
 from ramodels.mo._shared import OrgUnitRef
 from ramodels.mo._shared import PersonRef
 from ramodels.mo._shared import RoleType
 from ramodels.mo.details import Role
 
 from .base import BaseGenerator
+from ..util import EmployeeValidity
 
 
 class RoleGenerator(BaseGenerator):
@@ -37,10 +37,7 @@ class RoleGenerator(BaseGenerator):
                 role_type=RoleType(uuid=random.choice(role_type_uuids)),
                 person=PersonRef(uuid=employee.uuid),
                 org_unit=OrgUnitRef(uuid=org_unit.uuid),
-                validity=Validity(
-                    from_date="1930-01-01",
-                    to_date=None,
-                ),
+                validity=self.random_validity(org_unit.validity, EmployeeValidity),
             )
 
         return_value = list(list(map(construct_role, layer)) for layer in org_layers)

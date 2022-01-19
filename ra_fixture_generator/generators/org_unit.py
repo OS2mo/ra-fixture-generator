@@ -8,9 +8,9 @@ from uuid import UUID
 
 from ramodels.mo import OrganisationUnit
 
+from .base import BaseGenerator
 from ..util import OrgTree
 from ..util import tree_visitor
-from .base import BaseGenerator
 
 
 class OrgUnitGenerator(BaseGenerator):
@@ -24,19 +24,21 @@ class OrgUnitGenerator(BaseGenerator):
             uuid
             for user_key, uuid in sorted(org_unit_levels.items(), key=itemgetter(0))
         ]
+        org_unit_uuids = {}
 
         def construct_org_unit(
             name: str, level: int, prefix: str
         ) -> tuple[int, OrganisationUnit]:
-            return level, OrganisationUnit.from_simplified_fields(
-                uuid=self.generate_uuid(prefix + name),
+            org_unit = OrganisationUnit.from_simplified_fields(
                 user_key=name,
                 name=name,
                 org_unit_type_uuid=org_unit_type_uuid,
                 org_unit_level_uuid=levels[level],
-                parent_uuid=self.generate_uuid(prefix) if prefix else None,
-                from_date="1930-01-01",
+                parent_uuid=org_unit_uuids[prefix] if prefix else None,
+                **self.validity(allow_open_from=False).dict(),
             )
+            org_unit_uuids[prefix + name] = org_unit.uuid
+            return level, org_unit
 
         model_tree = list(tree_visitor(org_tree, construct_org_unit))
         model_layers = itertools.groupby(

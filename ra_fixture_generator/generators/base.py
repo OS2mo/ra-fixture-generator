@@ -2,12 +2,175 @@
 # SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
-from ra_utils.generate_uuid import uuid_generator
+import random
+from datetime import datetime
+from datetime import timedelta
+from typing import Union
+
+from faker import Faker
+from more_itertools import one
+from ramodels.mo import OpenValidity
+from ramodels.mo import Validity
+
+from ra_fixture_generator.util import DEFAULT_TZ
 
 
 class BaseGenerator:
     def __init__(self) -> None:
-        self.generate_uuid = uuid_generator(base=self.__class__.__name__)
+        self.fake = Faker("da_DK")
+
+    def validity(
+        self,
+        *intervals: OpenValidity,
+        allow_open_from: bool = True,
+        allow_open_to: bool = True
+    ) -> Union[Validity, OpenValidity]:
+        #         T      T+3y
+        # |<-->|                          : max_from < min_to < now
+        # |<--------->|                   : max_from < now < min_to < now + three_years
+        # |<------------------->|         : max_from < now < now + three_years < min_to
+        #           |<->|                 : now < max_from < min_to < now + three_years
+        #           |<--------->|         : now < max_from < now + three_years < min_to
+        #                     |<------>|  : now + three_years < max_from < min_to
+        from_dates = [i.from_date for i in intervals if i.from_date is not None]
+        to_dates = [i.to_date for i in intervals if i.to_date is not None]
+
+        now = datetime.now(tz=DEFAULT_TZ)
+        one_day = timedelta(days=1)
+        three_years = timedelta(days=365 * 3)
+
+        max_from_dates = max(from_dates, default=now - timedelta(days=365 * 25))
+        min_to_dates = min(to_dates, default=now + timedelta(days=365 * 15))
+
+        # If from/to_dates is falsy, all dates must be None, i.e. an open interval, in
+        # which case the generated validity will be open with 40%/60% probability.
+        if allow_open_from and not from_dates and random.random() < 0.4:
+            from_date = None
+        else:
+            if max_from_dates < min_to_dates < now:
+                from_date = self.fake.date_between_dates(
+                    date_start=max_from_dates,
+                    date_end=min_to_dates,
+                )
+            elif max_from_dates < now < min_to_dates < now + three_years:
+                from_date = self.fake.date_between_dates(
+                    date_start=max_from_dates,
+                    date_end=now - one_day,
+                )
+            elif max_from_dates < now < now + three_years < min_to_dates:
+                from_date = self.fake.date_between_dates(
+                    date_start=max_from_dates,
+                    date_end=now - one_day,
+                )
+            elif now < max_from_dates < min_to_dates < now + three_years:
+                from_date = self.fake.date_between_dates(
+                    date_start=max_from_dates,
+                    date_end=min_to_dates,
+                )
+            elif now < max_from_dates < now + three_years < min_to_dates:
+                from_date = self.fake.date_between_dates(
+                    date_start=max_from_dates,
+                    date_end=now + three_years,
+                )
+            elif now + three_years < max_from_dates < min_to_dates:
+                from_date = self.fake.date_between_dates(
+                    date_start=max_from_dates,
+                    date_end=min_to_dates,
+                )
+            else:
+                raise ValueError("Someone fucked up! Please don't git blame")
+
+        if allow_open_to and not to_dates and random.random() < 0.6:
+            to_date = None
+        else:
+            if max_from_dates < min_to_dates < now:
+                to_date = self.fake.date_between_dates(
+                    date_start=from_date,
+                    date_end=min_to_dates,
+                )
+            elif max_from_dates < now < min_to_dates < now + three_years:
+                to_date = self.fake.date_between_dates(
+                    date_start=now,
+                    date_end=min_to_dates,
+                )
+            elif max_from_dates < now < now + three_years < min_to_dates:
+                to_date = self.fake.date_between_dates(
+                    date_start=now + three_years,
+                    date_end=min_to_dates,
+                )
+            elif now < max_from_dates < min_to_dates < now + three_years:
+                to_date = self.fake.date_between_dates(
+                    date_start=from_date,
+                    date_end=min_to_dates,
+                )
+            elif now < max_from_dates < now + three_years < min_to_dates:
+                to_date = self.fake.date_between_dates(
+                    date_start=now + three_years,
+                    date_end=min_to_dates,
+                )
+            elif now + three_years < max_from_dates < min_to_dates:
+                to_date = self.fake.date_between_dates(
+                    date_start=from_date,
+                    date_end=min_to_dates,
+                )
+            else:
+                raise ValueError("Someone fucked up! Please don't git blame")
+
+        validity_cls = OpenValidity if allow_open_from and allow_open_to else Validity
+        return validity_cls(from_date=from_date, to_date=to_date)
+
+    def historic_validity(
+        self,
+        *intervals: OpenValidity,
+        allow_open_from: bool = True,
+        allow_open_to: bool = True
+    ) -> OpenValidity:
+        historic_validity = OpenValidity(
+            from_date=None,
+            to_date=datetime.now(tz=DEFAULT_TZ) - timedelta(days=1),
+        )
+        return self.validity(
+            *intervals,
+            historic_validity,
+            allow_open_from=allow_open_from,
+            allow_open_to=allow_open_to,
+        )
+
+    def future_validity(
+        self,
+        *intervals: OpenValidity,
+        allow_open_from: bool = True,
+        allow_open_to: bool = True
+    ) -> OpenValidity:
+        future_validity = OpenValidity(
+            # Ensure the generated data makes sense for at least three years, in case
+            # someone gets the brilliant idea to use the same fixture for like half a
+            # decade or something... You never know...
+            from_date=datetime.now(tz=DEFAULT_TZ) + timedelta(days=365 * 3),
+            to_date=None,
+        )
+        return self.validity(
+            *intervals,
+            future_validity,
+            allow_open_from=allow_open_from,
+            allow_open_to=allow_open_to,
+        )
+
+    def random_validity(
+        self,
+        *intervals: OpenValidity,
+        allow_open_from: bool = True,
+        allow_open_to: bool = True
+    ) -> Union[Validity, OpenValidity]:
+        validity_function = random.choices(
+            (self.validity, self.historic_validity, self.future_validity),
+            cum_weights=(70, 90, 100),
+        )
+        return one(validity_function)(
+            *intervals,
+            allow_open_from=allow_open_from,
+            allow_open_to=allow_open_to,
+        )
 
     def generate(self, *args, **kwargs):
         raise NotImplementedError()

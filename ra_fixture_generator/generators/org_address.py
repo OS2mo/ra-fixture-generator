@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
+from uuid import UUID
 
 import more_itertools
 from mimesis import Code
@@ -24,7 +25,19 @@ class OrgAddressGenerator(BaseGenerator):
         self.person_gen = Person("da")
         self.pnummer_gen = PNummer()
 
-    def generate(self, org_layers: list[list[OrganisationUnit]]) -> list[list[Address]]:
+    def generate(
+        self,
+        org_layers: list[list[OrganisationUnit]],
+        org_unit_address_types: dict[str, UUID],
+    ) -> list[list[Address]]:
+        fax_uuid = org_unit_address_types["FaxUnit"]
+        phone_uuid = org_unit_address_types["PhoneUnit"]
+        email_uuid = org_unit_address_types["EmailUnit"]
+        ean_uuid = org_unit_address_types["EAN"]
+        pnummer_uuid = org_unit_address_types["p-nummer"]
+        location_uuid = org_unit_address_types["LocationUnit"]
+        web_uuid = org_unit_address_types["WebUnit"]
+
         def construct_addresses(org_unit: OrganisationUnit) -> list[Address]:
             org_unit_uuid = org_unit.uuid
 
@@ -36,19 +49,13 @@ class OrgAddressGenerator(BaseGenerator):
                 #  generate_uuid("AdresseHenvendelsessted")),
                 # (generate_uuid("fake-dar-3" + str(org_unit_uuid)),
                 #  generate_uuid("AdressePostRetur")),
-                (self.person_gen.telephone("########"), self.generate_uuid("FaxUnit")),
-                (
-                    self.person_gen.telephone("########"),
-                    self.generate_uuid("PhoneUnit"),
-                ),
-                (self.person_gen.email(), self.generate_uuid("EmailUnit")),
-                (self.code_gen.ean(EANFormat.EAN13), self.generate_uuid("EAN")),
-                (self.pnummer_gen.pnumber(), self.generate_uuid("p-nummer")),
-                (
-                    "Bygning {}".format(random.randrange(1, 20)),
-                    self.generate_uuid("LocationUnit"),
-                ),
-                (self.internet_gen.url(), self.generate_uuid("WebUnit")),
+                (self.person_gen.telephone("########"), fax_uuid),
+                (self.person_gen.telephone("########"), phone_uuid),
+                (self.person_gen.email(), email_uuid),
+                (self.code_gen.ean(EANFormat.EAN13), ean_uuid),
+                (self.pnummer_gen.pnumber(), pnummer_uuid),
+                ("Bygning {}".format(random.randrange(1, 20)), location_uuid),
+                (self.internet_gen.url(), web_uuid),
             ]
 
             return [
@@ -56,8 +63,8 @@ class OrgAddressGenerator(BaseGenerator):
                     value=str(value),
                     value2=None,
                     address_type_uuid=address_type_uuid,
-                    from_date="1930-01-01",
                     org_unit_uuid=org_unit_uuid,
+                    **self.random_validity(org_unit.validity).dict()
                 )
                 for value, address_type_uuid in addresses
             ]

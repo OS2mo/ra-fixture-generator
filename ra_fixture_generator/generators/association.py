@@ -11,6 +11,7 @@ from ramodels.mo import OrganisationUnit
 from ramodels.mo.details import Association
 
 from .base import BaseGenerator
+from ..util import EmployeeValidity
 
 
 class AssociationGenerator(BaseGenerator):
@@ -29,8 +30,7 @@ class AssociationGenerator(BaseGenerator):
                 org_unit_uuid=org_unit.uuid,
                 person_uuid=employee.uuid,
                 association_type_uuid=random.choice(association_type_uuids),
-                from_date="1930-01-01",
-                to_date=None,
+                **self.random_validity(org_unit.validity, EmployeeValidity).dict(),
             )
 
         def construct_associations(org_unit: OrganisationUnit) -> list[Association]:

@@ -11,6 +11,7 @@ from ramodels.mo import Employee
 from ramodels.mo.details import Address
 
 from .base import BaseGenerator
+from ..util import EmployeeValidity
 
 
 class EmployeeAddressGenerator(BaseGenerator):
@@ -40,8 +41,8 @@ class EmployeeAddressGenerator(BaseGenerator):
                     value=str(value),
                     value2=None,
                     address_type_uuid=address_type_uuid,
-                    from_date="1930-01-01",  # todo: ensure this isn't before the associated org_unit or person
                     person_uuid=employee.uuid,
+                    **self.random_validity(EmployeeValidity).dict(),
                 )
                 for value, address_type_uuid in addresses
             ]

@@ -12,6 +12,7 @@ from ramodels.mo import OrganisationUnit
 from ramodels.mo.details import Engagement
 
 from .base import BaseGenerator
+from ..util import EmployeeValidity
 
 
 class EngagementGenerator(BaseGenerator):
@@ -26,9 +27,11 @@ class EngagementGenerator(BaseGenerator):
         org_layers: list[list[OrganisationUnit]],
         job_functions: dict[str, UUID],
         engagement_types: dict[str, UUID],
+        primary_types: dict[str, UUID],
     ) -> list[list[Engagement]]:
         job_function_uuids = list(job_functions.values())
         engagement_type_uuids = list(engagement_types.values())
+        primary_type_uuids = list(primary_types.values())
 
         def construct_engagement(
             employee: Employee, org_unit: OrganisationUnit
@@ -38,10 +41,9 @@ class EngagementGenerator(BaseGenerator):
                 person_uuid=employee.uuid,
                 job_function_uuid=random.choice(job_function_uuids),
                 engagement_type_uuid=random.choice(engagement_type_uuids),
-                from_date="1930-01-01",
-                to_date=None,
-                primary_uuid=self.generate_uuid("primary"),
+                primary_uuid=random.choice(primary_type_uuids),
                 user_key=self.person_gen.identifier(mask="@@@@@@@@0###"),
+                **self.validity(org_unit.validity, EmployeeValidity).dict()
             )
 
         employee_iter = iter(employees)

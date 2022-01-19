@@ -5,7 +5,6 @@
 import random
 from uuid import UUID
 
-from ramodels.mo import Validity
 from ramodels.mo._shared import EngagementRef
 from ramodels.mo._shared import LeaveType
 from ramodels.mo.details import Engagement
@@ -25,10 +24,7 @@ class LeaveGenerator(BaseGenerator):
                 leave_type=LeaveType(uuid=random.choice(leave_type_uuids)),
                 person=engagement.person,
                 engagement=EngagementRef(uuid=engagement.uuid),
-                validity=Validity(
-                    from_date="1930-01-01",
-                    to_date=None,
-                ),
+                validity=self.random_validity(engagement.validity),
             )
 
         return [list(map(construct_leave, layer)) for layer in engagement_layers]
