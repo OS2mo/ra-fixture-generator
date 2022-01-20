@@ -28,6 +28,7 @@ class EmployeeGenerator(BaseGenerator):
 
         print("Number of organisation units:", num_orgs)
         print("Number of employees:", num_orgs * employees_per_org)
+        cprs = set()
 
         def generate_employee(_: int) -> Employee:
             def even(x: int) -> bool:
@@ -35,10 +36,14 @@ class EmployeeGenerator(BaseGenerator):
 
             # Everyone's born between 60 and 30 years ago, so we can generate objects
             # associated with any employee without having to parse CPR back to a date.
-            cpr = self.danish_gen.cpr(
-                start=date.today().year - 60,
-                end=EmployeeValidity.from_date.year - 1,
-            )
+            while True:
+                cpr = self.danish_gen.cpr(
+                    start=date.today().year - 60,
+                    end=EmployeeValidity.from_date.year - 1,
+                )
+                if cpr not in cprs:
+                    cprs.add(cpr)
+                    break
             gender = Gender.MALE if even(int(cpr[-1])) else Gender.FEMALE
 
             return Employee(
