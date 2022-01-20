@@ -23,14 +23,15 @@ class BaseGenerator:
         self,
         *intervals: OpenValidity,
         allow_open_from: bool = True,
-        allow_open_to: bool = True
+        allow_open_to: bool = True,
+        force_open_to: bool = True,
     ) -> Union[Validity, OpenValidity]:
         #         T      T+3y
         # |<-->|                          : max_from < min_to < now
-        # |<--------->|                   : max_from < now < min_to < now + three_years
-        # |<------------------->|         : max_from < now < now + three_years < min_to
+        # |<-----><-->|                   : max_from < now < min_to < now + three_years
+        # |<----->--------<---->|         : max_from < now < now + three_years < min_to
         #           |<->|                 : now < max_from < min_to < now + three_years
-        #           |<--------->|         : now < max_from < now + three_years < min_to
+        #           |<----><--->|         : now < max_from < now + three_years < min_to
         #                     |<------>|  : now + three_years < max_from < min_to
         from_dates = [i.from_date for i in intervals if i.from_date is not None]
         to_dates = [i.to_date for i in intervals if i.to_date is not None]
@@ -80,7 +81,7 @@ class BaseGenerator:
             else:
                 raise ValueError("Someone fucked up! Please don't git blame")
 
-        if allow_open_to and not to_dates and random.random() < 0.6:
+        if force_open_to or (allow_open_to and not to_dates and random.random() < 0.6):
             to_date = None
         else:
             if max_from_dates < min_to_dates < now:
@@ -119,29 +120,14 @@ class BaseGenerator:
         validity_cls = OpenValidity if allow_open_from and allow_open_to else Validity
         return validity_cls(from_date=from_date, to_date=to_date)
 
-    def historic_validity(
-        self,
-        *intervals: OpenValidity,
-        allow_open_from: bool = True,
-        allow_open_to: bool = True
-    ) -> OpenValidity:
+    def historic_validity(self, *intervals: OpenValidity, **kwargs) -> OpenValidity:
         historic_validity = OpenValidity(
             from_date=None,
             to_date=datetime.now(tz=DEFAULT_TZ) - timedelta(days=1),
         )
-        return self.validity(
-            *intervals,
-            historic_validity,
-            allow_open_from=allow_open_from,
-            allow_open_to=allow_open_to,
-        )
+        return self.validity(*intervals, historic_validity, **kwargs)
 
-    def future_validity(
-        self,
-        *intervals: OpenValidity,
-        allow_open_from: bool = True,
-        allow_open_to: bool = True
-    ) -> OpenValidity:
+    def future_validity(self, *intervals: OpenValidity, **kwargs) -> OpenValidity:
         future_validity = OpenValidity(
             # Ensure the generated data makes sense for at least three years, in case
             # someone gets the brilliant idea to use the same fixture for like half a
@@ -149,28 +135,16 @@ class BaseGenerator:
             from_date=datetime.now(tz=DEFAULT_TZ) + timedelta(days=365 * 3),
             to_date=None,
         )
-        return self.validity(
-            *intervals,
-            future_validity,
-            allow_open_from=allow_open_from,
-            allow_open_to=allow_open_to,
-        )
+        return self.validity(*intervals, future_validity, **kwargs)
 
     def random_validity(
-        self,
-        *intervals: OpenValidity,
-        allow_open_from: bool = True,
-        allow_open_to: bool = True
+        self, *intervals: OpenValidity, **kwargs
     ) -> Union[Validity, OpenValidity]:
         validity_function = random.choices(
             (self.validity, self.historic_validity, self.future_validity),
             cum_weights=(70, 90, 100),
         )
-        return one(validity_function)(
-            *intervals,
-            allow_open_from=allow_open_from,
-            allow_open_to=allow_open_to,
-        )
+        return one(validity_function)(*intervals, **kwargs)
 
     def generate(self, *args, **kwargs):
         raise NotImplementedError()

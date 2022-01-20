@@ -27,20 +27,25 @@ class OrgUnitGenerator(BaseGenerator):
                 self.org_unit_levels.items(), key=itemgetter(0)
             )
         ]
-        org_unit_uuids = {}
+        org_units = {}
 
         def construct_org_unit(
             name: str, level: int, prefix: str
         ) -> tuple[int, OrganisationUnit]:
+            parent = org_units.get(prefix)
             org_unit = OrganisationUnit.from_simplified_fields(
                 user_key=name,
                 name=name,
                 org_unit_type_uuid=org_unit_type_uuid,
                 org_unit_level_uuid=levels[level],
-                parent_uuid=org_unit_uuids[prefix] if prefix else None,
-                **self.validity(allow_open_from=False).dict(),
+                parent_uuid=parent.uuid if parent else None,
+                **self.validity(
+                    *([parent.validity] if parent else []),
+                    allow_open_from=False,
+                    force_open_to=True,
+                ).dict(),
             )
-            org_unit_uuids[prefix + name] = org_unit.uuid
+            org_units[prefix + name] = org_unit
             return level, org_unit
 
         model_tree = list(tree_visitor(org_tree, construct_org_unit))
