@@ -15,21 +15,22 @@ from ..util import EmployeeValidity
 
 
 class AssociationGenerator(BaseGenerator):
+    def __init__(self, association_types: dict[str, UUID]) -> None:
+        super().__init__()
+        self.association_type_uuids = list(association_types.values())
+
     def generate(
         self,
         org_layers: list[list[OrganisationUnit]],
         employees: list[Employee],
         employees_per_org: int,
-        association_types: dict[str, UUID],
     ) -> list[list[Association]]:
-        association_type_uuids = list(association_types.values())
-
         def construct_association(org_unit: OrganisationUnit) -> Association:
             employee = random.choice(employees)
             return Association.from_simplified_fields(
                 org_unit_uuid=org_unit.uuid,
                 person_uuid=employee.uuid,
-                association_type_uuid=random.choice(association_type_uuids),
+                association_type_uuid=random.choice(self.association_type_uuids),
                 **self.random_validity(org_unit.validity, EmployeeValidity).dict(),
             )
 

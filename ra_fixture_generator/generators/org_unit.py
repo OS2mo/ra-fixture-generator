@@ -14,15 +14,18 @@ from ..util import tree_visitor
 
 
 class OrgUnitGenerator(BaseGenerator):
+    def __init__(self, org_unit_levels: dict[str, UUID]) -> None:
+        super().__init__()
+        self.org_unit_levels = org_unit_levels
+
     def generate(
-        self,
-        org_tree: OrgTree,
-        org_unit_type_uuid: UUID,
-        org_unit_levels: dict[str, UUID],
+        self, org_tree: OrgTree, org_unit_type_uuid: UUID
     ) -> list[list[OrganisationUnit]]:
         levels = [
             uuid
-            for user_key, uuid in sorted(org_unit_levels.items(), key=itemgetter(0))
+            for user_key, uuid in sorted(
+                self.org_unit_levels.items(), key=itemgetter(0)
+            )
         ]
         org_unit_uuids = {}
 

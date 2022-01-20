@@ -18,14 +18,17 @@ from ..util import EmployeeValidity
 
 
 class RoleGenerator(BaseGenerator):
+    def __init__(self, role_types: dict[str, UUID]) -> None:
+        super().__init__()
+        self.role_types = role_types
+
     def generate(
         self,
         org_layers: list[list[OrganisationUnit]],
         employees: list[Employee],
         employees_per_org: int,
-        role_types: dict[str, UUID],
     ) -> list[list[Role]]:
-        role_type_uuids = list(role_types.values())
+        role_type_uuids = list(self.role_types.values())
         employee_iter = iter(employees)
 
         def construct_role(org_unit: OrganisationUnit) -> Role:

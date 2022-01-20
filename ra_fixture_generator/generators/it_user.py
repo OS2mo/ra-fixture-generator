@@ -15,15 +15,12 @@ from ..util import EmployeeValidity
 
 
 class ITUserGenerator(BaseGenerator):
-    def __init__(self) -> None:
+    def __init__(self, it_systems: dict[str, UUID]) -> None:
         super().__init__()
+        self.it_systems_uuids = list(it_systems.values())
         self.person_gen = Person("da")
 
-    def generate(
-        self, employees: list[Employee], it_systems: dict[str, UUID]
-    ) -> list[ITUser]:
-        it_systems_uuids = list(it_systems.values())
-
+    def generate(self, employees: list[Employee]) -> list[ITUser]:
         def construct_it_users(employee: Employee) -> list[ITUser]:
             return [
                 ITUser.from_simplified_fields(
@@ -32,7 +29,7 @@ class ITUserGenerator(BaseGenerator):
                     person_uuid=employee.uuid,
                     **self.random_validity(EmployeeValidity).dict(),
                 )
-                for it_system_uuid in it_systems_uuids * 2
+                for it_system_uuid in self.it_systems_uuids * 2
                 if random.random() < 0.6
             ]
 

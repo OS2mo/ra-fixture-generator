@@ -16,27 +16,26 @@ from ..util import EmployeeValidity
 
 
 class EmployeeAddressGenerator(BaseGenerator):
-    def __init__(self) -> None:
+    def __init__(self, employee_address_types: dict[str, UUID]) -> None:
         super().__init__()
+        self.employee_address_types = employee_address_types
         self.person_gen = Person("da")
 
     @staticmethod
     def gen_building() -> str:
         return "Bygning {}".format(random.randrange(1, 20))
 
-    def generate(
-        self, employees: list[Employee], employee_address_types: dict[str, UUID]
-    ) -> list[Address]:
+    def generate(self, employees: list[Employee]) -> list[Address]:
         generators = [
             # TODO: dar_uuid needs to be valid, fetch from DAR?
             # (generate_uuid("fake-dar-1" + str(employee_uuid)),
             #  generate_uuid("AdressePostEmployee")),
-            (self.person_gen.email, employee_address_types["EmailEmployee"]),
+            (self.person_gen.email, self.employee_address_types["EmailEmployee"]),
             (
                 partial(self.person_gen.telephone, "########"),
-                employee_address_types["PhoneEmployee"],
+                self.employee_address_types["PhoneEmployee"],
             ),
-            (self.gen_building, employee_address_types["LocationEmployee"]),
+            (self.gen_building, self.employee_address_types["LocationEmployee"]),
         ]
 
         def construct_addresses(employee: Employee) -> list[Address]:

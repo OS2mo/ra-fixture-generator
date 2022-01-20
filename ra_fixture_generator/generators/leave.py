@@ -15,16 +15,16 @@ from .base import BaseGenerator
 
 
 class LeaveGenerator(BaseGenerator):
-    def generate(
-        self, engagement_layers: list[list[Engagement]], leave_types: dict[str, UUID]
-    ) -> list[list[Leave]]:
-        leave_type_uuids = list(leave_types.values())
+    def __init__(self, leave_types: dict[str, UUID]) -> None:
+        super().__init__()
+        self.leave_type_uuids = list(leave_types.values())
 
+    def generate(self, engagement_layers: list[list[Engagement]]) -> list[list[Leave]]:
         def construct_leave(engagement: Engagement) -> Optional[Leave]:
             if random.random() > 0.4:
                 return None
             return Leave(
-                leave_type=LeaveType(uuid=random.choice(leave_type_uuids)),
+                leave_type=LeaveType(uuid=random.choice(self.leave_type_uuids)),
                 person=engagement.person,
                 engagement=EngagementRef(uuid=engagement.uuid),
                 validity=self.random_validity(engagement.validity),

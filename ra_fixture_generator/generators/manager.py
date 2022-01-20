@@ -15,18 +15,23 @@ from ..util import EmployeeValidity
 
 
 class ManagerGenerator(BaseGenerator):
+    def __init__(
+        self,
+        responsibilities: dict[str, UUID],
+        manager_levels: dict[str, UUID],
+        manager_types: dict[str, UUID],
+    ) -> None:
+        super().__init__()
+        self.responsibility_uuids = list(responsibilities.values())
+        self.manager_level_uuids = list(manager_levels.values())
+        self.manager_type_uuids = list(manager_types.values())
+
     def generate(
         self,
         org_layers: list[list[OrganisationUnit]],
         employees: list[Employee],
         employees_per_org: int,
-        responsibilities: dict[str, UUID],
-        manager_levels: dict[str, UUID],
-        manager_types: dict[str, UUID],
     ) -> list[list[Manager]]:
-        responsibility_uuids = list(responsibilities.values())
-        manager_level_uuids = list(manager_levels.values())
-        manager_type_uuids = list(manager_types.values())
         employee_iter = iter(employees)
 
         def construct_manager(org_unit: OrganisationUnit) -> Manager:
@@ -37,9 +42,9 @@ class ManagerGenerator(BaseGenerator):
             return Manager.from_simplified_fields(
                 org_unit_uuid=org_unit.uuid,
                 person_uuid=employee.uuid,
-                responsibility_uuids=[random.choice(responsibility_uuids)],
-                manager_level_uuid=random.choice(manager_level_uuids),
-                manager_type_uuid=random.choice(manager_type_uuids),
+                responsibility_uuids=[random.choice(self.responsibility_uuids)],
+                manager_level_uuid=random.choice(self.manager_level_uuids),
+                manager_type_uuid=random.choice(self.manager_type_uuids),
                 **self.random_validity(org_unit.validity, EmployeeValidity).dict(),
             )
 

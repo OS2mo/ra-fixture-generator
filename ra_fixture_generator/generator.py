@@ -46,59 +46,60 @@ def generate_data(
     org_tree = OrgTreeGenerator().generate(
         size=size,
     )
-    org_layers = OrgUnitGenerator().generate(
+    org_layers = OrgUnitGenerator(org_unit_levels=classes["org_unit_level"]).generate(
         org_tree=org_tree,
         org_unit_type_uuid=classes["org_unit_type"][min(classes["org_unit_type"])],
-        org_unit_levels=classes["org_unit_level"],
     )
-    org_address_layers = OrgAddressGenerator().generate(
+    org_address_layers = OrgAddressGenerator(
+        org_unit_address_types=classes["org_unit_address_type"]
+    ).generate(
         org_layers=org_layers,
-        org_unit_address_types=classes["org_unit_address_type"],
     )
 
     employees = EmployeeGenerator().generate(
         org_layers=org_layers,
         employees_per_org=employees_per_org,
     )
-    employee_addresses = EmployeeAddressGenerator().generate(
+    employee_addresses = EmployeeAddressGenerator(
+        employee_address_types=classes["employee_address_type"]
+    ).generate(
         employees=employees,
-        employee_address_types=classes["employee_address_type"],
     )
-    engagement_layers = EngagementGenerator().generate(
-        employees=employees,
-        org_layers=org_layers,
-        employees_per_org=employees_per_org,
+    engagement_layers = EngagementGenerator(
         job_functions=classes["engagement_job_function"],
         engagement_types=classes["engagement_type"],
         primary_types=classes["primary_type"],
-    )
-    manager_layers = ManagerGenerator().generate(
-        org_layers=org_layers,
+    ).generate(
         employees=employees,
+        org_layers=org_layers,
         employees_per_org=employees_per_org,
+    )
+    manager_layers = ManagerGenerator(
         responsibilities=classes["responsibility"],
         manager_levels=classes["manager_level"],
         manager_types=classes["manager_type"],
-    )
-    association_layers = AssociationGenerator().generate(
+    ).generate(
         org_layers=org_layers,
         employees=employees,
         employees_per_org=employees_per_org,
+    )
+    association_layers = AssociationGenerator(
         association_types=classes["association_type"],
-    )
-    role_layers = RoleGenerator().generate(
+    ).generate(
         org_layers=org_layers,
         employees=employees,
         employees_per_org=employees_per_org,
-        role_types=classes["role_type"],
     )
-    leave_layers = LeaveGenerator().generate(
-        engagement_layers=engagement_layers,
-        leave_types=classes["leave_type"],
-    )
-    it_users = ITUserGenerator().generate(
+    role_layers = RoleGenerator(role_types=classes["role_type"]).generate(
+        org_layers=org_layers,
         employees=employees,
-        it_systems=it_systems,
+        employees_per_org=employees_per_org,
+    )
+    leave_layers = LeaveGenerator(leave_types=classes["leave_type"]).generate(
+        engagement_layers=engagement_layers,
+    )
+    it_users = ITUserGenerator(it_systems=it_systems).generate(
+        employees=employees,
     )
 
     # All employee addresses can be merged into the first layer of org-addresses,

@@ -19,8 +19,10 @@ from .base import BaseGenerator
 
 
 class OrgAddressGenerator(BaseGenerator):
-    def __init__(self) -> None:
+    def __init__(self, org_unit_address_types: dict[str, UUID]) -> None:
         super().__init__()
+        self.org_unit_address_types = org_unit_address_types
+
         self.code_gen = Code()
         self.internet_gen = Internet()
         self.person_gen = Person("da")
@@ -30,11 +32,7 @@ class OrgAddressGenerator(BaseGenerator):
     def gen_building() -> str:
         return "Bygning {}".format(random.randrange(1, 20))
 
-    def generate(
-        self,
-        org_layers: list[list[OrganisationUnit]],
-        org_unit_address_types: dict[str, UUID],
-    ) -> list[list[Address]]:
+    def generate(self, org_layers: list[list[OrganisationUnit]]) -> list[list[Address]]:
         generators = [
             # TODO: dar_uuid needs to be valid, fetch from DAR?
             # (generate_uuid("fake-dar-1" + str(org_unit_uuid)),
@@ -45,20 +43,20 @@ class OrgAddressGenerator(BaseGenerator):
             #  generate_uuid("AdressePostRetur")),
             (
                 partial(self.person_gen.telephone, "########"),
-                org_unit_address_types["FaxUnit"],
+                self.org_unit_address_types["FaxUnit"],
             ),
             (
                 partial(self.person_gen.telephone, "########"),
-                org_unit_address_types["PhoneUnit"],
+                self.org_unit_address_types["PhoneUnit"],
             ),
-            (self.person_gen.email, org_unit_address_types["EmailUnit"]),
+            (self.person_gen.email, self.org_unit_address_types["EmailUnit"]),
             (
                 partial(self.code_gen.ean, EANFormat.EAN13),
-                org_unit_address_types["EAN"],
+                self.org_unit_address_types["EAN"],
             ),
-            (self.pnummer_gen.pnumber, org_unit_address_types["p-nummer"]),
-            (self.gen_building, org_unit_address_types["LocationUnit"]),
-            (self.internet_gen.url, org_unit_address_types["WebUnit"]),
+            (self.pnummer_gen.pnumber, self.org_unit_address_types["p-nummer"]),
+            (self.gen_building, self.org_unit_address_types["LocationUnit"]),
+            (self.internet_gen.url, self.org_unit_address_types["WebUnit"]),
         ]
 
         def construct_addresses(org_unit: OrganisationUnit) -> list[Address]:
