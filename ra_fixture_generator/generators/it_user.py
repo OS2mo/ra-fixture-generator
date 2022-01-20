@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
+from collections.abc import Iterator
 from uuid import UUID
 
 import more_itertools
@@ -12,6 +13,7 @@ from ramodels.mo.details import ITUser
 
 from .base import BaseGenerator
 from ..util import EmployeeValidity
+from ..util import thawed
 
 
 class ITUserGenerator(BaseGenerator):
@@ -34,3 +36,13 @@ class ITUserGenerator(BaseGenerator):
             ]
 
         return list(more_itertools.flatten(map(construct_it_users, employees)))
+
+    def generate_modifications(self, it_users: list[ITUser]) -> list[ITUser]:
+        def construct_modification(it_user: ITUser) -> Iterator[ITUser]:
+            while random.random() < 0.35:
+                with thawed(it_user.copy()) as copy:
+                    copy.user_key = self.person_gen.username(mask="ld")
+                    copy.validity = self.random_validity(EmployeeValidity)
+                yield copy
+
+        return list(more_itertools.flatten(map(construct_modification, it_users)))

@@ -3,15 +3,20 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
+from collections.abc import Iterator
 from uuid import UUID
 
 import more_itertools
 from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
+from ramodels.mo._shared import ManagerLevel
+from ramodels.mo._shared import ManagerType
+from ramodels.mo._shared import Responsibility
 from ramodels.mo.details import Manager
 
 from .base import BaseGenerator
 from ..util import EmployeeValidity
+from ..util import thawed
 
 
 class ManagerGenerator(BaseGenerator):
@@ -52,3 +57,35 @@ class ManagerGenerator(BaseGenerator):
         # Ensure all employees were consumed
         assert more_itertools.ilen(employee_iter) == 0
         return return_value
+
+    def generate_modifications(
+        self,
+        manager_layers: list[list[Manager]],
+        org_layers: list[list[OrganisationUnit]],
+    ) -> list[Manager]:
+        org_unit_validities = {
+            ou.uuid: ou.validity for ou in more_itertools.flatten(org_layers)
+        }
+
+        def construct_modification(manager: Manager) -> Iterator[Manager]:
+            while random.random() < 0.15:
+                with thawed(manager.copy()) as copy:
+                    copy.responsibility = [
+                        Responsibility(uuid=random.choice(self.responsibility_uuids))
+                    ]
+                    copy.manager_level = ManagerLevel(
+                        uuid=random.choice(self.manager_level_uuids)
+                    )
+                    copy.manager_type = ManagerType(
+                        uuid=random.choice(self.manager_type_uuids)
+                    )
+                    copy.validity = self.random_validity(
+                        org_unit_validities[copy.org_unit.uuid], EmployeeValidity
+                    )
+                yield copy
+
+        return list(
+            more_itertools.flatten(
+                map(construct_modification, more_itertools.flatten(manager_layers))
+            )
+        )

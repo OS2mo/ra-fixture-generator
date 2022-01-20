@@ -3,7 +3,10 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
+from collections.abc import Iterator
+from functools import cached_property
 from functools import partial
+from typing import Callable
 from uuid import UUID
 
 import more_itertools
@@ -16,6 +19,7 @@ from ramodels.mo.details import Address
 
 from ..util import PNummer
 from .base import BaseGenerator
+from ..util import thawed
 
 
 class OrgAddressGenerator(BaseGenerator):
@@ -32,8 +36,9 @@ class OrgAddressGenerator(BaseGenerator):
     def gen_building() -> str:
         return "Bygning {}".format(random.randrange(1, 20))
 
-    def generate(self, org_layers: list[list[OrganisationUnit]]) -> list[list[Address]]:
-        generators = [
+    @cached_property
+    def generators(self) -> dict[UUID, Callable]:
+        return {
             # TODO: dar_uuid needs to be valid, fetch from DAR?
             # (generate_uuid("fake-dar-1" + str(org_unit_uuid)),
             #  generate_uuid("AdresseMailUnit")),
@@ -41,37 +46,34 @@ class OrgAddressGenerator(BaseGenerator):
             #  generate_uuid("AdresseHenvendelsessted")),
             # (generate_uuid("fake-dar-3" + str(org_unit_uuid)),
             #  generate_uuid("AdressePostRetur")),
-            (
-                partial(self.person_gen.telephone, "########"),
-                self.org_unit_address_types["FaxUnit"],
+            self.org_unit_address_types["FaxUnit"]: partial(
+                self.person_gen.telephone, "########"
             ),
-            (
-                partial(self.person_gen.telephone, "########"),
-                self.org_unit_address_types["PhoneUnit"],
+            self.org_unit_address_types["PhoneUnit"]: partial(
+                self.person_gen.telephone, "########"
             ),
-            (self.person_gen.email, self.org_unit_address_types["EmailUnit"]),
-            (
-                partial(self.code_gen.ean, EANFormat.EAN13),
-                self.org_unit_address_types["EAN"],
+            self.org_unit_address_types["EmailUnit"]: self.person_gen.email,
+            self.org_unit_address_types["EAN"]: partial(
+                self.code_gen.ean, EANFormat.EAN13
             ),
-            (self.pnummer_gen.pnumber, self.org_unit_address_types["p-nummer"]),
-            (self.gen_building, self.org_unit_address_types["LocationUnit"]),
-            (self.internet_gen.url, self.org_unit_address_types["WebUnit"]),
-        ]
+            self.org_unit_address_types["p-nummer"]: self.pnummer_gen.pnumber,
+            self.org_unit_address_types["LocationUnit"]: self.gen_building,
+            self.org_unit_address_types["WebUnit"]: self.internet_gen.url,
+        }
 
+    def generate(self, org_layers: list[list[OrganisationUnit]]) -> list[list[Address]]:
         def construct_addresses(org_unit: OrganisationUnit) -> list[Address]:
-            org_unit_uuid = org_unit.uuid
-
             return [
                 Address.from_simplified_fields(
                     value=str(generator()),
                     value2=None,
                     address_type_uuid=address_type_uuid,
-                    org_unit_uuid=org_unit_uuid,
+                    org_unit_uuid=org_unit.uuid,
                     **self.random_validity(org_unit.validity).dict()
                 )
-                for generator, address_type_uuid in random.choices(
-                    generators, k=int(random.gammavariate(alpha=7, beta=1))
+                for address_type_uuid, generator in random.choices(
+                    list(self.generators.items()),
+                    k=int(random.gammavariate(alpha=7, beta=1)),
                 )
             ]
 
@@ -79,3 +81,27 @@ class OrgAddressGenerator(BaseGenerator):
             list(more_itertools.flatten(map(construct_addresses, layer)))
             for layer in org_layers
         ]
+
+    def generate_modifications(
+        self,
+        address_layers: list[list[Address]],
+        org_layers: list[list[OrganisationUnit]],
+    ) -> list[Address]:
+        org_unit_validities = {
+            ou.uuid: ou.validity for ou in more_itertools.flatten(org_layers)
+        }
+
+        def construct_modification(address: Address) -> Iterator[Address]:
+            while random.random() < 0.15:
+                with thawed(address.copy()) as copy:
+                    copy.value = self.generators[address.address_type.uuid]()
+                    copy.validity = self.random_validity(
+                        org_unit_validities[copy.org_unit.uuid]
+                    )
+                yield copy
+
+        return list(
+            more_itertools.flatten(
+                map(construct_modification, more_itertools.flatten(address_layers))
+            )
+        )

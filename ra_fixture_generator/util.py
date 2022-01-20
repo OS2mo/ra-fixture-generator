@@ -5,6 +5,8 @@
 import zoneinfo
 from collections.abc import Callable
 from collections.abc import Iterator
+from contextlib import contextmanager
+from copy import copy
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
@@ -16,6 +18,7 @@ import click
 from mimesis.builtins import DenmarkSpecProvider
 from mimesis.builtins.base import BaseSpecProvider
 from pydantic import AnyHttpUrl
+from pydantic import BaseModel
 from pydantic import parse_obj_as
 from pydantic import ValidationError
 from ramodels.mo import Validity
@@ -94,3 +97,19 @@ def tree_visitor_levels(
         yield yield_func(name, level, prefix)
     for name, children in tree.items():
         yield from tree_visitor_levels(children, yield_func, level + 1, prefix + name)
+
+
+T = TypeVar("T", bound=BaseModel)
+
+
+@contextmanager
+def thawed(obj: T) -> Iterator[T]:
+    config = obj.__config__
+    original_config = copy(config)
+    try:
+        config.frozen = False
+        config.validate_assignment = True
+        yield obj
+    finally:
+        config.frozen = original_config.frozen
+        config.validate_assignment = original_config.validate_assignment

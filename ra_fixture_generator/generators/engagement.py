@@ -3,16 +3,20 @@
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
 import random
+from collections.abc import Iterator
 from uuid import UUID
 
 import more_itertools
 from mimesis import Person
 from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
+from ramodels.mo._shared import EngagementType
+from ramodels.mo._shared import JobFunction
 from ramodels.mo.details import Engagement
 
 from .base import BaseGenerator
 from ..util import EmployeeValidity
+from ..util import thawed
 
 
 class EngagementGenerator(BaseGenerator):
@@ -63,3 +67,35 @@ class EngagementGenerator(BaseGenerator):
         # Ensure all employees were consumed
         assert more_itertools.ilen(employee_iter) == 0
         return return_value
+
+    def generate_modifications(
+        self,
+        engagement_layers: list[list[Engagement]],
+        org_layers: list[list[OrganisationUnit]],
+    ) -> list[Engagement]:
+        org_unit_validities = {
+            ou.uuid: ou.validity for ou in more_itertools.flatten(org_layers)
+        }
+
+        def construct_modification(engagement: Engagement) -> Iterator[Engagement]:
+            while random.random() < 0.2:
+                with thawed(engagement.copy()) as copy:
+                    copy.user_key = self.person_gen.identifier(mask="@@@@@@@@0###")
+                    copy.validity = self.validity(
+                        org_unit_validities[copy.org_unit.uuid], EmployeeValidity
+                    )
+                    if random.random() < 0.75:
+                        copy.job_function = JobFunction(
+                            uuid=random.choice(self.job_function_uuids)
+                        )
+                    if random.random() < 0.45:
+                        copy.engagement_type = EngagementType(
+                            uuid=random.choice(self.engagement_type_uuids)
+                        )
+                yield copy
+
+        return list(
+            more_itertools.flatten(
+                map(construct_modification, more_itertools.flatten(engagement_layers))
+            )
+        )
