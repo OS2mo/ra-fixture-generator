@@ -62,7 +62,8 @@ and `org_unit_level` needs to have at least 8 classes defined, which will be use
 organisation units on each level in the organisational tree.
 
 A recommended [os2mo-init](https://git.magenta.dk/rammearkitektur/os2mo-init) configuration, which adds a default set of
-classes, is available in [init.config.yml](init.config.yml).
+classes, is available in [init.config.yml](init.config.yml). **NOTE** that this configuration must be run in _addition_
+to the default configuration, which means a completely empty stack must run os2mo-init _twice_.
 
 
 ## Versioning
