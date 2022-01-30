@@ -23,8 +23,6 @@ from pydantic import parse_obj_as
 from pydantic import ValidationError
 from ramodels.mo import Validity
 
-DEFAULT_TZ = zoneinfo.ZoneInfo("Europe/Copenhagen")
-
 
 def validate_url(ctx: click.Context, param: Any, value: Any) -> AnyHttpUrl:
     try:
@@ -71,7 +69,7 @@ EmployeeValidity = Validity(
     # Bounding when any employee will be valid from. This is used to generate employees,
     # and subsequently to generate associated objects without having to parse the CPR
     # back to a date.
-    from_date=datetime.now(tz=DEFAULT_TZ) - timedelta(days=365 * 30),
+    from_date=datetime.now().date() - timedelta(days=365 * 30),
     to_date=None,
 )
 
