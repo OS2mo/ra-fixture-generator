@@ -181,22 +181,25 @@ def generate_data(
             # Offset the following by one, by prepending an empty list. This ensures
             # that chunks for their dependencies (i.e. org_units/employees) have been
             # created before they are referenced.
-            prepend(
-                [],
-                address_layers
-                + [org_address_modifications]
-                + [employee_address_modifications],
-            ),
-            prepend([], engagement_layers + [engagement_modifications]),
-            prepend([], manager_layers + [manager_modifications]),
+            prepend([], address_layers),
+            prepend([], engagement_layers),
+            prepend([], manager_layers),
             prepend([], association_layers),
-            prepend([], role_layers + [role_modifications]),
-            prepend([], [it_users] + [it_user_modifications]),
+            prepend([], role_layers),
+            prepend([], [it_users]),
             # Offset the following by two, as it depends on the previous layers
-            itertools.chain(([], []), leave_layers + [leave_modifications]),
+            itertools.chain(([], []), leave_layers),
             fillvalue=[],
         ),
     )
+    edits = MOFlatFileFormatChunk(
+        engagements=engagement_modifications,
+        address=org_address_modifications + employee_address_modifications,
+        manager=manager_modifications,
+        roles=role_modifications,
+        leaves=leave_modifications,
+        it_users=it_user_modifications,
+    )
 
-    mo_flatfile = MOFlatFileFormat(chunks=list(chunks))
+    mo_flatfile = MOFlatFileFormat(chunks=list(chunks), edits=[edits])
     return mo_flatfile
