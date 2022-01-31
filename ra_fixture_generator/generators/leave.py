@@ -23,6 +23,8 @@ class LeaveGenerator(BaseGenerator):
         self.leave_type_uuids = list(leave_types.values())
 
     def generate(self, engagement_layers: list[list[Engagement]]) -> list[list[Leave]]:
+        print("Generating leaves")
+
         def construct_leave(engagement: Engagement) -> Optional[Leave]:
             if random.random() > 0.4:
                 return None

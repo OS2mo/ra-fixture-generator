@@ -30,6 +30,8 @@ class RoleGenerator(BaseGenerator):
         employees: list[Employee],
         employees_per_org: int,
     ) -> list[list[Role]]:
+        print("Generating roles")
+
         employee_iter = iter(employees)
 
         def construct_role(org_unit: OrganisationUnit) -> Role:

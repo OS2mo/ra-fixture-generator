@@ -38,6 +38,8 @@ class EngagementGenerator(BaseGenerator):
         employees_per_org: int,
         org_layers: list[list[OrganisationUnit]],
     ) -> list[list[Engagement]]:
+        print("Generating engagements")
+
         def construct_engagement(
             employee: Employee, org_unit: OrganisationUnit
         ) -> Engagement:

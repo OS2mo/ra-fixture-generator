@@ -25,6 +25,8 @@ class AssociationGenerator(BaseGenerator):
         employees: list[Employee],
         employees_per_org: int,
     ) -> list[list[Association]]:
+        print("Generating associations")
+
         def construct_association(org_unit: OrganisationUnit) -> Association:
             employee = random.choice(employees)
             return Association.from_simplified_fields(

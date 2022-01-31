@@ -19,6 +19,8 @@ class OrgTreeGenerator(BaseGenerator):
         self.development_gen = Development()
 
     def generate(self, size: int) -> OrgTree:
+        print("Generating organisation tree")
+
         return {
             "Borgmesterens Afdeling": {
                 "Budget og Planlægning": {},

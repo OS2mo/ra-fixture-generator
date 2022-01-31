@@ -43,6 +43,8 @@ class EmployeeAddressGenerator(BaseGenerator):
         }
 
     def generate(self, employees: list[Employee]) -> list[Address]:
+        print("Generating employee addresses")
+
         def construct_addresses(employee: Employee) -> list[Address]:
             return [
                 Address.from_simplified_fields(

@@ -37,6 +37,8 @@ class ManagerGenerator(BaseGenerator):
         employees: list[Employee],
         employees_per_org: int,
     ) -> list[list[Manager]]:
+        print("Generating managers")
+
         employee_iter = iter(employees)
 
         def construct_manager(org_unit: OrganisationUnit) -> Manager:

@@ -21,6 +21,8 @@ class OrgUnitGenerator(BaseGenerator):
     def generate(
         self, org_tree: OrgTree, org_unit_type_uuid: UUID
     ) -> list[list[OrganisationUnit]]:
+        print("Generating organisation units")
+
         levels = [
             uuid
             for user_key, uuid in sorted(

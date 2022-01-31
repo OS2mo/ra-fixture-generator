@@ -23,6 +23,8 @@ class ITUserGenerator(BaseGenerator):
         self.person_gen = Person("da")
 
     def generate(self, employees: list[Employee]) -> list[ITUser]:
+        print("Generating employees")
+
         def construct_it_users(employee: Employee) -> list[ITUser]:
             return [
                 ITUser.from_simplified_fields(

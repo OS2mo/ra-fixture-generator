@@ -62,6 +62,8 @@ class OrgAddressGenerator(BaseGenerator):
         }
 
     def generate(self, org_layers: list[list[OrganisationUnit]]) -> list[list[Address]]:
+        print("Generating organisation addresses")
+
         def construct_addresses(org_unit: OrganisationUnit) -> list[Address]:
             return [
                 Address.from_simplified_fields(

@@ -28,6 +28,7 @@ class EmployeeGenerator(BaseGenerator):
 
         print("Number of organisation units:", num_orgs)
         print("Number of employees:", num_orgs * employees_per_org)
+        print("Generating employees")
         cprs = set()
 
         def generate_employee(_: int) -> Employee:
