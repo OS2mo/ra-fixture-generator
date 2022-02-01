@@ -14,9 +14,9 @@ from ramodels.mo._shared import PersonRef
 from ramodels.mo._shared import RoleType
 from ramodels.mo.details import Role
 
-from .base import BaseGenerator
 from ..util import EmployeeValidity
 from ..util import thawed
+from .base import BaseGenerator
 
 
 class RoleGenerator(BaseGenerator):

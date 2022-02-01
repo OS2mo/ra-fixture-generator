@@ -5,10 +5,10 @@
 import random
 from datetime import datetime
 from datetime import timedelta
+from typing import Any
 from typing import Union
 
 from faker import Faker
-from more_itertools import one
 from ramodels.mo import OpenValidity
 from ramodels.mo import Validity
 
@@ -131,14 +131,16 @@ class BaseGenerator:
 
         return validity_cls(from_date=from_date, to_date=to_date)
 
-    def historic_validity(self, *intervals: OpenValidity, **kwargs) -> OpenValidity:
+    def historic_validity(
+        self, *intervals: OpenValidity, **kwargs: Any
+    ) -> OpenValidity:
         historic_validity = OpenValidity(
             from_date=None,
             to_date=self.past_end,
         )
         return self.validity(*intervals, historic_validity, **kwargs)
 
-    def future_validity(self, *intervals: OpenValidity, **kwargs) -> OpenValidity:
+    def future_validity(self, *intervals: OpenValidity, **kwargs: Any) -> OpenValidity:
         future_validity = OpenValidity(
             from_date=self.future_start,
             to_date=None,
@@ -146,7 +148,7 @@ class BaseGenerator:
         return self.validity(*intervals, future_validity, **kwargs)
 
     def random_validity(
-        self, *intervals: OpenValidity, **kwargs
+        self, *intervals: OpenValidity, **kwargs: Any
     ) -> Union[Validity, OpenValidity]:
         # this is so bad, lol, but cba
         while True:
@@ -154,10 +156,7 @@ class BaseGenerator:
                 validity_function = random.choices(
                     (self.validity, self.historic_validity, self.future_validity),
                     cum_weights=(70, 90, 100),
-                )
-                return one(validity_function)(*intervals, **kwargs)
-            except ValueError as e:
+                )[0]
+                return validity_function(*intervals, **kwargs)  # type: ignore[operator]
+            except ValueError:
                 print("Brute-forcing solution instead of fixing code; hang on...")
-
-    def generate(self, *args, **kwargs):
-        raise NotImplementedError()

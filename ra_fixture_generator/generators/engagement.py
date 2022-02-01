@@ -14,9 +14,9 @@ from ramodels.mo._shared import EngagementType
 from ramodels.mo._shared import JobFunction
 from ramodels.mo.details import Engagement
 
-from .base import BaseGenerator
 from ..util import EmployeeValidity
 from ..util import thawed
+from .base import BaseGenerator
 
 
 class EngagementGenerator(BaseGenerator):

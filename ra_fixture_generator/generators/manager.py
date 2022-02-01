@@ -14,9 +14,9 @@ from ramodels.mo._shared import ManagerType
 from ramodels.mo._shared import Responsibility
 from ramodels.mo.details import Manager
 
-from .base import BaseGenerator
 from ..util import EmployeeValidity
 from ..util import thawed
+from .base import BaseGenerator
 
 
 class ManagerGenerator(BaseGenerator):

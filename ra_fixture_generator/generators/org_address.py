@@ -18,8 +18,8 @@ from ramodels.mo import OrganisationUnit
 from ramodels.mo.details import Address
 
 from ..util import PNummer
-from .base import BaseGenerator
 from ..util import thawed
+from .base import BaseGenerator
 
 
 class OrgAddressGenerator(BaseGenerator):

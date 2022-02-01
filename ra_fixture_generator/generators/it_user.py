@@ -11,9 +11,9 @@ from mimesis import Person
 from ramodels.mo import Employee
 from ramodels.mo.details import ITUser
 
-from .base import BaseGenerator
 from ..util import EmployeeValidity
 from ..util import thawed
+from .base import BaseGenerator
 
 
 class ITUserGenerator(BaseGenerator):

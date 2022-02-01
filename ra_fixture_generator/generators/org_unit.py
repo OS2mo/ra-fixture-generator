@@ -8,9 +8,9 @@ from uuid import UUID
 
 from ramodels.mo import OrganisationUnit
 
-from .base import BaseGenerator
 from ..util import OrgTree
 from ..util import tree_visitor
+from .base import BaseGenerator
 
 
 class OrgUnitGenerator(BaseGenerator):
@@ -29,7 +29,7 @@ class OrgUnitGenerator(BaseGenerator):
                 self.org_unit_levels.items(), key=itemgetter(0)
             )
         ]
-        org_units = {}
+        org_units: dict[str, OrganisationUnit] = {}
 
         def construct_org_unit(
             name: str, level: int, prefix: str

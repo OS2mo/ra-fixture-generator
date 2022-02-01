@@ -1,3 +1,7 @@
+# --------------------------------------------------------------------------------------
+# SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
+# SPDX-License-Identifier: MPL-2.0
+# --------------------------------------------------------------------------------------
 from typing import Optional
 from uuid import UUID
 
@@ -69,9 +73,7 @@ def get_classes(graphql_client: GraphQLClient) -> dict[str, dict[str, UUID]]:
     }
 
 
-def get_it_systems(
-    client: Client, graphql_client: GraphQLClient
-) -> dict[str, UUID]:
+def get_it_systems(client: Client, graphql_client: GraphQLClient) -> dict[str, UUID]:
     root_org_uuid = get_root_org(graphql_client)
     r = client.get(f"/service/o/{root_org_uuid}/it/")
     it_systems = r.json()

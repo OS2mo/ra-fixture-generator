@@ -10,9 +10,9 @@ from mimesis.enums import Gender
 from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
 
-from .base import BaseGenerator
 from ..util import EmployeeValidity
 from ..util import FixedDenmarkSpecProvider
+from .base import BaseGenerator
 
 
 class EmployeeGenerator(BaseGenerator):

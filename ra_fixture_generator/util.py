@@ -2,11 +2,11 @@
 # SPDX-FileCopyrightText: 2021 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 # --------------------------------------------------------------------------------------
-import zoneinfo
 from collections.abc import Callable
 from collections.abc import Iterator
 from contextlib import contextmanager
 from copy import copy
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
@@ -38,14 +38,14 @@ class FixedDenmarkSpecProvider(DenmarkSpecProvider):
     but that's what you get for working with hideous libraries.
     """
 
-    def cpr(self, start=1858, end=2021) -> str:
+    def cpr(self, start: int = 1858, end: int = 2021) -> str:
         orig_date = self._datetime.date
 
-        def patched_date(*args, **kwargs):
-            return orig_date(start=start, end=end)
+        def patched_date(*args: Any, **kwargs: Any) -> date:
+            return orig_date(start=start, end=end)  # type: ignore[no-any-return]
 
         with patch.object(self._datetime, "date", patched_date):
-            return super().cpr()
+            return super().cpr()  # type: ignore[no-any-return]
 
 
 class PNummer(BaseSpecProvider):

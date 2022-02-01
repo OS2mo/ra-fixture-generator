@@ -53,7 +53,7 @@ class OrgTreeGenerator(BaseGenerator):
     ) -> OrgTree:
         def generate_school() -> tuple[str, OrgTree]:
             name = f"{self.address_gen.postal_code()} - {self.address_gen.city()} skole"
-            school = {}
+            school: dict[str, dict] = {}
             if random.random() > 0.5:
                 school["Administration"] = {}
             school["Teknisk Support"] = {

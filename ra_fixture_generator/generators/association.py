@@ -10,8 +10,8 @@ from ramodels.mo import Employee
 from ramodels.mo import OrganisationUnit
 from ramodels.mo.details import Association
 
-from .base import BaseGenerator
 from ..util import EmployeeValidity
+from .base import BaseGenerator
 
 
 class AssociationGenerator(BaseGenerator):

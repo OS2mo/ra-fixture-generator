@@ -13,8 +13,8 @@ from ramodels.mo._shared import LeaveType
 from ramodels.mo.details import Engagement
 from ramodels.mo.details import Leave
 
-from .base import BaseGenerator
 from ..util import thawed
+from .base import BaseGenerator
 
 
 class LeaveGenerator(BaseGenerator):
