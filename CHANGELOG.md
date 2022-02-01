@@ -1,4 +1,8 @@
-Release type: major
+CHANGELOG
+=========
+
+1.0.0 - 2022-02-01
+------------------
 
 todo: more # todo
 [#45480] Read UUIDs from MO
@@ -15,3 +19,4 @@ todo: more # todo
 [#45480] Bump version
 [#45480] Apply minor refactoring and fixes
 [#45480] Update dependencies
+
