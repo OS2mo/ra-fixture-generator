@@ -305,6 +305,47 @@ facets:
     explicitly-primary:
       title: "Manuelt primær ansættelse"
       scope: "5000"
+  kle_aspect:
+    Udførende:
+      title: "Udførende"
+      scope: "UDFOERENDE"
+    Ansvarlig:
+      title: "Ansvarlig"
+      scope: "ANSVARLIG"
+    Indsigt:
+      title: "Indsigt"
+      scope: "INDSIGT"
+  kle_number:
+    00.01:
+      title: "00.01 - Kommunens styrelse"
+      scope: null
+    00.01.00:
+      title: "00.01.00 - Kommunens styrelse i almindelighed"
+      scope: null
+    00.22:
+      title: "00.22 - Kommunalbestyrelsen, udvalg mv. - kommunens styrelse"
+      scope: null
+    00.15:
+      title: "00.15 - Administrativ organisering"
+      scope: null
+    00.15.25:
+      title: "00.15.25 - Grundlaget for effektivisering"
+      scope: null
+    27.03.22:
+      title: "27.03.22 - Drift af dagbehandlingstilbud"
+      scope: null
+    29.03.06:
+      title: "29.03.06 - Udstedelse af EU-sygesikringskort"
+      scope: null
+    00.17.15:
+      title: "00.17.15 - Kommunale samarbejder"
+      scope: null
+    00.07.20:
+      title: "00.07.20 - Videreanvendelse af den offentlige sektors informationer"
+      scope: null
+    28.03.20:
+      title: "28.03.20 - Puljeordninger"
+      scope: null
 
 it_systems:
   OpenLDAP: "LDAP"

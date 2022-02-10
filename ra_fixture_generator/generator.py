@@ -19,6 +19,7 @@ from ramodels.mo.details import Address
 from ramodels.mo.details import Association
 from ramodels.mo.details import Engagement
 from ramodels.mo.details import ITUser
+from ramodels.mo.details import KLE
 from ramodels.mo.details import Leave
 from ramodels.mo.details import Manager
 from ramodels.mo.details import Role
@@ -28,6 +29,7 @@ from .generators.employee import EmployeeGenerator
 from .generators.employee_address import EmployeeAddressGenerator
 from .generators.engagement import EngagementGenerator
 from .generators.it_user import ITUserGenerator
+from .generators.kle import KLEGenerator
 from .generators.leave import LeaveGenerator
 from .generators.manager import ManagerGenerator
 from .generators.org_address import OrgAddressGenerator
@@ -58,6 +60,11 @@ def generate_data(
         address_layers=org_address_layers,
         org_layers=org_layers,
     )
+    kle_generator = KLEGenerator(
+        kle_aspects=classes["kle_aspect"],
+        kle_numbers=classes["kle_number"],
+    )
+    kle_layers = kle_generator.generate(org_layers=org_layers)
 
     employee_generator = EmployeeGenerator()
     employees = employee_generator.generate(
@@ -154,6 +161,7 @@ def generate_data(
         org_layer: list[OrganisationUnit],
         employee_layer: list[Employee],
         address_layer: list[Address],
+        kle_layer: list[KLE],
         engagement_layer: list[Engagement],
         manager_layer: list[Manager],
         association_layer: list[Association],
@@ -171,6 +179,7 @@ def generate_data(
             roles=role_layer,
             leaves=leave_layer,
             it_users=it_user_layer,
+            kles=kle_layer,
         )
 
     chunks = map(
@@ -182,6 +191,7 @@ def generate_data(
             # that chunks for their dependencies (i.e. org_units/employees) have been
             # created before they are referenced.
             prepend([], address_layers),
+            prepend([], kle_layers),
             prepend([], engagement_layers),
             prepend([], manager_layers),
             prepend([], association_layers),
