@@ -275,7 +275,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "httpcore"
-version = "0.14.5"
+version = "0.14.7"
 description = "A minimal low-level HTTP client."
 category = "main"
 optional = false
@@ -313,7 +313,7 @@ http2 = ["h2 (>=3,<5)"]
 
 [[package]]
 name = "identify"
-version = "2.4.7"
+version = "2.4.9"
 description = "File identification library for Python"
 category = "dev"
 optional = false
@@ -441,7 +441,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
 [[package]]
 name = "platformdirs"
-version = "2.4.1"
+version = "2.5.0"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
@@ -587,7 +587,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "ra-flatfile-importer"
-version = "2.0.1"
+version = "2.1.1"
 description = "Flatfile importer for OS2mo"
 category = "main"
 optional = false
@@ -597,8 +597,8 @@ python-versions = ">=3.9,<4.0"
 click = ">=8.0.3,<9.0.0"
 pydantic = ">=1.9.0,<2.0.0"
 ra-utils = ">=0.4.0,<0.5.0"
-raclients = ">=1.1.0,<2.0.0"
-ramodels = ">=5.0.0,<6.0.0"
+raclients = ">=1.2.1,<2.0.0"
+ramodels = ">=5.3.2,<6.0.0"
 tqdm = ">=4.60.0,<5.0.0"
 
 [[package]]
@@ -623,7 +623,7 @@ headers = ["pydantic (>=1.8.2,<2.0.0)", "requests (>=2.26.0,<3.0.0)", "types-req
 
 [[package]]
 name = "raclients"
-version = "1.1.0"
+version = "1.2.1"
 description = "Clients for OS2mo/LoRa"
 category = "main"
 optional = false
@@ -638,14 +638,14 @@ jsonschema = ">=3.2.0,<4.0.0"
 more-itertools = ">=8.7.0,<9.0.0"
 pydantic = ">=1.9.0,<2.0.0"
 ra-utils = {version = ">=0.4.0,<0.5.0", extras = ["headers"]}
-ramodels = ">=5.1.0,<6.0.0"
+ramodels = ">=5.3.2,<6.0.0"
 structlog = ">=21.2.0,<22.0.0"
 tenacity = ">=8.0.1,<9.0.0"
 tqdm = ">=4.62.3,<5.0.0"
 
 [[package]]
 name = "ramodels"
-version = "5.1.0"
+version = "5.3.2"
 description = "Pydantic data models for OS2mo"
 category = "main"
 optional = false
@@ -795,7 +795,7 @@ telegram = ["requests"]
 
 [[package]]
 name = "types-requests"
-version = "2.27.8"
+version = "2.27.9"
 description = "Typing stubs for requests"
 category = "main"
 optional = false
@@ -806,7 +806,7 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-urllib3"
-version = "1.26.8"
+version = "1.26.9"
 description = "Typing stubs for urllib3"
 category = "main"
 optional = false
@@ -835,7 +835,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.13.0"
+version = "20.13.1"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
@@ -866,7 +866,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "2938affb485160cd4c95ca77802a07ed747ac96408756b31024a152a2b4ff3ba"
+content-hash = "9849d6058d73ab55792d2b2f52950eb34242024aeb355d0d1cade9b38aa29b1b"
 
 [metadata.files]
 anyio = [
@@ -1023,16 +1023,16 @@ h11 = [
     {file = "h11-0.12.0.tar.gz", hash = "sha256:47222cb6067e4a307d535814917cd98fd0a57b6788ce715755fa2b6c28b56042"},
 ]
 httpcore = [
-    {file = "httpcore-0.14.5-py3-none-any.whl", hash = "sha256:2621ee769d0236574df51b305c5f4c69ca8f0c7b215221ad247b1ee42a9a9de1"},
-    {file = "httpcore-0.14.5.tar.gz", hash = "sha256:435ab519628a6e2393f67812dea3ca5c6ad23b457412cd119295d9f906d96a2b"},
+    {file = "httpcore-0.14.7-py3-none-any.whl", hash = "sha256:47d772f754359e56dd9d892d9593b6f9870a37aeb8ba51e9a88b09b3d68cfade"},
+    {file = "httpcore-0.14.7.tar.gz", hash = "sha256:7503ec1c0f559066e7e39bc4003fd2ce023d01cf51793e3c173b864eb456ead1"},
 ]
 httpx = [
     {file = "httpx-0.21.3-py3-none-any.whl", hash = "sha256:df9a0fd43fa79dbab411d83eb1ea6f7a525c96ad92e60c2d7f40388971b25777"},
     {file = "httpx-0.21.3.tar.gz", hash = "sha256:7a3eb67ef0b8abbd6d9402248ef2f84a76080fa1c839f8662e6eb385640e445a"},
 ]
 identify = [
-    {file = "identify-2.4.7-py2.py3-none-any.whl", hash = "sha256:e64210654dfbca6ced33230eb1b137591a0981425e1a60b4c6c36309f787bbd5"},
-    {file = "identify-2.4.7.tar.gz", hash = "sha256:8408f01e0be25492017346d7dffe7e7711b762b23375c775d24d3bc38618fabc"},
+    {file = "identify-2.4.9-py2.py3-none-any.whl", hash = "sha256:bff7c4959d68510bc28b99d664b6a623e36c6eadc933f89a4e0a9ddff9b4fee4"},
+    {file = "identify-2.4.9.tar.gz", hash = "sha256:e926ae3b3dc142b6a7a9c65433eb14ccac751b724ee255f7c2ed3b5970d764fb"},
 ]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
@@ -1158,8 +1158,8 @@ pathspec = [
     {file = "pathspec-0.9.0.tar.gz", hash = "sha256:e564499435a2673d586f6b2130bb5b95f04a3ba06f81b8f895b651a3c76aabb1"},
 ]
 platformdirs = [
-    {file = "platformdirs-2.4.1-py3-none-any.whl", hash = "sha256:1d7385c7db91728b83efd0ca99a5afb296cab9d0ed8313a45ed8ba17967ecfca"},
-    {file = "platformdirs-2.4.1.tar.gz", hash = "sha256:440633ddfebcc36264232365d7840a970e75e1018d15b4327d11f91909045fda"},
+    {file = "platformdirs-2.5.0-py3-none-any.whl", hash = "sha256:30671902352e97b1eafd74ade8e4a694782bd3471685e78c32d0fdfd3aa7e7bb"},
+    {file = "platformdirs-2.5.0.tar.gz", hash = "sha256:8ec11dfba28ecc0715eb5fb0147a87b1bf325f349f3da9aab2cd6b50b96b692b"},
 ]
 pluggy = [
     {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
@@ -1293,20 +1293,20 @@ pyyaml = [
     {file = "PyYAML-6.0.tar.gz", hash = "sha256:68fb519c14306fec9720a2a5b45bc9f0c8d1b9c72adf45c37baedfcd949c35a2"},
 ]
 ra-flatfile-importer = [
-    {file = "ra-flatfile-importer-2.0.1.tar.gz", hash = "sha256:5cbe59819a4315ecc02a01536246afbea1d4e71f1379037a1c62d1233c561eae"},
-    {file = "ra_flatfile_importer-2.0.1-py3-none-any.whl", hash = "sha256:e68f40875bbdccc57b325dc04f13dc9aa9e1ad89507a60e93f5555a1bd99d088"},
+    {file = "ra-flatfile-importer-2.1.1.tar.gz", hash = "sha256:b68d32d3879e8f038434fe97da8bb72ee4c6d2dc2492bc65581715eb236c3603"},
+    {file = "ra_flatfile_importer-2.1.1-py3-none-any.whl", hash = "sha256:c409d6409c4f00a99ce1688418697912b531a045c41d4279f2e0fefc4e807572"},
 ]
 ra-utils = [
     {file = "ra-utils-0.4.0.tar.gz", hash = "sha256:7d604faae0433e518a5ac401bea7b4db6ae41bab2ff798f203b32b0b82774e48"},
     {file = "ra_utils-0.4.0-py3-none-any.whl", hash = "sha256:93441f4302710ff5f75d9e0451e6ead81186c2fd47124c879098216d4e5d5db4"},
 ]
 raclients = [
-    {file = "raclients-1.1.0-py3-none-any.whl", hash = "sha256:e297fec0d67989dfc2aa0bb0f042fbdaef970972e698252c378433887392d91a"},
-    {file = "raclients-1.1.0.tar.gz", hash = "sha256:dadfd4d923d2b6d8fa85369bb30e16062c7557709434bdd2d43ce59661de31e0"},
+    {file = "raclients-1.2.1-py3-none-any.whl", hash = "sha256:4af5e9dacda149fa4fc21057f84bc5bb8ea03b3ae1fe227a6ccb15e76f5cee6a"},
+    {file = "raclients-1.2.1.tar.gz", hash = "sha256:ceb3d9cb3a23e2a58df7baa1f8b791c1000c18dcc00ad1ab325eeb47274f77c3"},
 ]
 ramodels = [
-    {file = "ramodels-5.1.0-py3-none-any.whl", hash = "sha256:4b275e137bf83c1f91ff7f90f440f41aa2f149b77dd58df301c845b0642bdd37"},
-    {file = "ramodels-5.1.0.tar.gz", hash = "sha256:3dad5ed795746b662058361cf1de64e7d8e94832bbca5f974a036350256e4820"},
+    {file = "ramodels-5.3.2-py3-none-any.whl", hash = "sha256:1ddeb63eb6ec0445ae0574a40df7d606d5f47e8d5031b539ef170a59f8594c84"},
+    {file = "ramodels-5.3.2.tar.gz", hash = "sha256:ba37baa23d7bfa0d3d18de96a5a3e7abf8b0baa5211e338c13d86ce46a43b515"},
 ]
 reorder-python-imports = [
     {file = "reorder_python_imports-2.7.1-py2.py3-none-any.whl", hash = "sha256:5477c008cd7a5f2dbe32a35e90d74b5a3427468731441f033034310e427143a3"},
@@ -1357,12 +1357,12 @@ tqdm = [
     {file = "tqdm-4.62.3.tar.gz", hash = "sha256:d359de7217506c9851b7869f3708d8ee53ed70a1b8edbba4dbcb47442592920d"},
 ]
 types-requests = [
-    {file = "types-requests-2.27.8.tar.gz", hash = "sha256:c2f4e4754d07ca0a88fd8a89bbc6c8a9f90fb441f9c9b572fd5c484f04817486"},
-    {file = "types_requests-2.27.8-py3-none-any.whl", hash = "sha256:8ec9f5f84adc6f579f53943312c28a84e87dc70201b54f7c4fbc7d22ecfa8a3e"},
+    {file = "types-requests-2.27.9.tar.gz", hash = "sha256:7368974534d297939492efdfdab232930440b11e2203f6df1f0c40e3242a87ea"},
+    {file = "types_requests-2.27.9-py3-none-any.whl", hash = "sha256:74070045418faf710f3154403d6a16c9e67db50e5119906ca6955f1658d20f7b"},
 ]
 types-urllib3 = [
-    {file = "types-urllib3-1.26.8.tar.gz", hash = "sha256:aa0de26893f138523d5552bbb023826c0cc7ea5749d80c1693c57aab7b55f469"},
-    {file = "types_urllib3-1.26.8-py3-none-any.whl", hash = "sha256:a929c68a57b24eee8f7003357b935b802e17767e752d9237266f799ca48ee326"},
+    {file = "types-urllib3-1.26.9.tar.gz", hash = "sha256:abd2d4857837482b1834b4817f0587678dcc531dbc9abe4cde4da28cef3f522c"},
+    {file = "types_urllib3-1.26.9-py3-none-any.whl", hash = "sha256:4a54f6274ab1c80968115634a55fb9341a699492b95e32104a7c513db9fe02e9"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.0.1-py3-none-any.whl", hash = "sha256:7f001e5ac290a0c0401508864c7ec868be4e701886d5b573a9528ed3973d9d3b"},
@@ -1373,8 +1373,8 @@ urllib3 = [
     {file = "urllib3-1.26.8.tar.gz", hash = "sha256:0e7c33d9a63e7ddfcb86780aac87befc2fbddf46c58dbb487e0855f7ceec283c"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.13.0-py2.py3-none-any.whl", hash = "sha256:339f16c4a86b44240ba7223d0f93a7887c3ca04b5f9c8129da7958447d079b09"},
-    {file = "virtualenv-20.13.0.tar.gz", hash = "sha256:d8458cf8d59d0ea495ad9b34c2599487f8a7772d796f9910858376d1600dd2dd"},
+    {file = "virtualenv-20.13.1-py2.py3-none-any.whl", hash = "sha256:45e1d053cad4cd453181ae877c4ffc053546ae99e7dd049b9ff1d9be7491abf7"},
+    {file = "virtualenv-20.13.1.tar.gz", hash = "sha256:e0621bcbf4160e4e1030f05065c8834b4e93f4fcc223255db2a823440aca9c14"},
 ]
 yarl = [
     {file = "yarl-1.7.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:f2a8508f7350512434e41065684076f640ecce176d262a7d54f0da41d99c5a95"},
