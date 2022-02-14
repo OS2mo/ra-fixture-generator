@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ra-fixture-generator"
-version = "1.1.0"
+version = "1.1.1"
 description = "Flatfile Fixture generator for OS2mo"
 authors = ["Magenta <info@magenta.dk>"]
 license = "MPL-2.0"

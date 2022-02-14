@@ -7,6 +7,11 @@ SPDX-License-Identifier: MPL-2.0
 CHANGELOG
 =========
 
+1.1.1 - 2022-02-14
+------------------
+
+[#48566] Fix childcare generation
+
 1.1.0 - 2022-02-11
 ------------------
 
