@@ -51,8 +51,14 @@ class OrgTreeGenerator(BaseGenerator):
     def gen_schools_and_childcare(
         self, num_schools: int, num_childcare: int
     ) -> OrgTree:
+        def gen_city() -> str:
+            # The number of cities in the mimesis library is way too small, so we need
+            # to append a random postal code to ensure that we don't overwrite the same
+            # name in the output org tree dictionary over and over, limiting the size.
+            return f"{self.address_gen.postal_code()} - {self.address_gen.city()}"
+
         def generate_school() -> tuple[str, OrgTree]:
-            name = f"{self.address_gen.postal_code()} - {self.address_gen.city()} skole"
+            name = f"{gen_city()} skole"
             school: dict[str, dict] = {}
             if random.random() > 0.5:
                 school["Administration"] = {}
@@ -63,7 +69,7 @@ class OrgTreeGenerator(BaseGenerator):
             return name, school
 
         def generate_childcare() -> tuple[str, OrgTree]:
-            name = self.address_gen.city() + " børnehave"
+            name = f"{gen_city()} børnehave"
             return name, {}
 
         schools = (generate_school() for _ in range(num_schools))
