@@ -27,7 +27,7 @@ def get_clients(
     )
     httpx_client = AuthenticatedHTTPXClient(base_url=mo_url, **auth_params)
     graphql_client = GraphQLClient(
-        url=f"{mo_url}/graphql",
+        url=f"{mo_url}/graphql/v1",
         **auth_params,
         sync=True,
     )
