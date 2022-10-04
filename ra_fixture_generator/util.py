@@ -54,7 +54,7 @@ class PNummer(BaseSpecProvider):
 
     def _gen_x_digit_number(self, n: int) -> str:
         assert n > 0
-        number = self.random.randint(0, 10 ** n - 1)
+        number = self.random.randint(0, 10**n - 1)
         return str(number).zfill(n)
 
     def pnumber(self) -> str:
